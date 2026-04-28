@@ -1,0 +1,991 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RiskQ CISO-Level Report</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;1,9..144,300;1,9..144,400&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #f5f6f8; --bg2: #ffffff; --bg3: #eef0f4;
+    --card: #ffffff; --border: rgba(0,0,0,0.08); --border2: rgba(0,0,0,0.14);
+    --text: #111318; --muted: #4a5060; --hint: #8a8f9e;
+    --red: #c9312f; --red-bg: rgba(201,49,47,0.07); --red-b: rgba(201,49,47,0.2);
+    --amber: #b86e1a; --amber-bg: rgba(184,110,26,0.08); --amber-b: rgba(184,110,26,0.22);
+    --green: #2e8f5a; --green-bg: rgba(46,143,90,0.08); --green-b: rgba(46,143,90,0.2);
+    --blue: #2470b8; --blue-bg: rgba(36,112,184,0.08); --blue-b: rgba(36,112,184,0.2);
+    --teal: #1a8f89; --teal-bg: rgba(26,143,137,0.08); --teal-b: rgba(26,143,137,0.2);
+    --r-lg: 12px; --r-md: 8px;
+  }
+  html { scroll-behavior: smooth; }
+  body { font-family: 'DM Mono', monospace; background: var(--bg); color: var(--text); font-size: 13px; line-height: 1.6; }
+
+  .site-header { background: var(--bg2); border-bottom: 0.5px solid var(--border2); padding: 0 40px; display: flex; align-items: center; justify-content: space-between; height: 60px; position: sticky; top: 0; z-index: 100; }
+  .logo { font-family: 'Fraunces', serif; font-size: 22px; font-weight: 400; letter-spacing: -0.5px; }
+  .logo em { font-style: italic; color: var(--amber); }
+  .logo-sub { font-size: 12px; color: var(--hint); font-family: 'DM Mono', monospace; font-weight: 300; margin-left: 8px; }
+  .nav { display: flex; gap: 2px; }
+  .nav a { font-size: 10px; text-transform: uppercase; letter-spacing: 0.8px; color: var(--hint); text-decoration: none; padding: 5px 9px; border-radius: var(--r-md); transition: color .15s, background .15s; white-space: nowrap; }
+  .nav a:hover { color: var(--text); background: var(--bg3); }
+  .header-right { display: flex; align-items: center; gap: 14px; flex-shrink: 0; }
+  .header-meta { font-size: 10px; color: var(--hint); text-align: right; line-height: 1.7; }
+  .header-meta strong { color: var(--muted); }
+  .conf-badge { font-size: 9px; text-transform: uppercase; letter-spacing: 1px; padding: 3px 10px; border-radius: 20px; background: var(--amber-bg); color: var(--amber); border: 0.5px solid var(--amber-b); white-space: nowrap; }
+
+  .main { max-width: 1400px; margin: 0 auto; padding: 32px 40px 60px; }
+  .page-title { margin-bottom: 32px; padding-bottom: 24px; border-bottom: 0.5px solid var(--border); display: flex; align-items: flex-end; justify-content: space-between; }
+  .page-title h1 { font-family: 'Fraunces', serif; font-size: 42px; font-weight: 300; letter-spacing: -1px; line-height: 1; }
+  .page-title h1 em { font-style: italic; color: var(--amber); }
+  .page-title p { font-size: 11px; color: var(--hint); margin-top: 8px; text-transform: uppercase; letter-spacing: 1.2px; }
+  .period-pill { font-size: 11px; color: var(--muted); background: var(--bg3); border: 0.5px solid var(--border2); padding: 6px 14px; border-radius: var(--r-md); white-space: nowrap; }
+
+  .section-label { font-size: 9px; text-transform: uppercase; letter-spacing: 2px; color: var(--hint); margin: 32px 0 12px; display: flex; align-items: center; gap: 12px; }
+  .section-label::after { content: ''; flex: 1; height: 0.5px; background: var(--border); }
+
+  .kpi-band { display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px; margin-bottom: 4px; }
+  .kpi-card { background: var(--card); border: 0.5px solid var(--border); border-radius: var(--r-lg); padding: 16px 18px; position: relative; overflow: hidden; transition: border-color .2s, transform .15s; }
+  .kpi-card:hover { border-color: var(--border2); transform: translateY(-1px); }
+  .kpi-card::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; border-radius: 3px 0 0 3px; }
+  .kpi-card.red::before { background: var(--red); } .kpi-card.amber::before { background: var(--amber); }
+  .kpi-card.green::before { background: var(--green); } .kpi-card.blue::before { background: var(--blue); }
+  .kpi-card.teal::before { background: var(--teal); }
+  .kpi-label { font-size: 9px; color: var(--hint); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 8px; }
+  .kpi-val { font-family: 'Fraunces', serif; font-size: 24px; font-weight: 300; color: var(--text); line-height: 1; }
+  .kpi-sub { font-size: 10px; color: var(--muted); margin-top: 5px; }
+  .kpi-delta { font-size: 10px; margin-top: 4px; }
+  .kpi-delta.up { color: var(--red); } .kpi-delta.dn { color: var(--green); } .kpi-delta.flat { color: var(--hint); }
+
+  .g2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
+  .g3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-bottom: 12px; }
+  .g32 { display: grid; grid-template-columns: 3fr 2fr; gap: 12px; margin-bottom: 12px; }
+  .g23 { display: grid; grid-template-columns: 2fr 3fr; gap: 12px; margin-bottom: 12px; }
+
+  .panel { background: var(--card); border: 0.5px solid var(--border); border-radius: var(--r-lg); padding: 18px 20px; transition: border-color .2s; }
+  .panel:hover { border-color: var(--border2); }
+  .panel-title { font-size: 9px; text-transform: uppercase; letter-spacing: 1px; color: var(--hint); margin-bottom: 14px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 6px; }
+
+  .badge { font-size: 8px; padding: 2px 8px; border-radius: 20px; font-weight: 500; white-space: nowrap; }
+  .badge.red { background: var(--red-bg); color: var(--red); border: 0.5px solid var(--red-b); }
+  .badge.amber { background: var(--amber-bg); color: var(--amber); border: 0.5px solid var(--amber-b); }
+  .badge.green { background: var(--green-bg); color: var(--green); border: 0.5px solid var(--green-b); }
+  .badge.blue { background: var(--blue-bg); color: var(--blue); border: 0.5px solid var(--blue-b); }
+  .badge.teal { background: var(--teal-bg); color: var(--teal); border: 0.5px solid var(--teal-b); }
+
+  .stat-row { display: flex; align-items: center; justify-content: space-between; padding: 7px 0; border-bottom: 0.5px solid var(--border); font-size: 11px; }
+  .stat-row:last-child { border-bottom: none; }
+  .stat-label { color: var(--muted); }
+  .stat-val { font-weight: 500; color: var(--text); }
+
+  /* Insurance */
+  .ins-cards { display: grid; grid-template-columns: repeat(5,1fr); gap: 10px; margin-bottom: 14px; }
+  .ins-card { background: var(--bg3); border: 0.5px solid var(--border); border-radius: var(--r-lg); padding: 14px 16px; }
+  .ins-header { font-size: 9px; text-transform: uppercase; letter-spacing: 0.8px; color: var(--muted); margin-bottom: 8px; padding-bottom: 6px; border-bottom: 0.5px solid var(--border); }
+  .ins-val { font-family: 'Fraunces', serif; font-size: 22px; font-weight: 300; line-height: 1; }
+  .ins-sub { font-size: 9px; color: var(--hint); margin-top: 5px; }
+
+  .ol-table { width: 100%; border-collapse: collapse; font-size: 11px; }
+  .ol-table th { font-size: 9px; text-transform: uppercase; letter-spacing: 0.6px; color: var(--hint); padding: 0 8px 8px 0; font-weight: 400; text-align: left; }
+  .ol-table td { padding: 6px 8px 6px 0; border-top: 0.5px solid var(--border); color: var(--text); vertical-align: middle; font-variant-numeric: tabular-nums; }
+  .ol-table td.r { text-align: right; }
+  .ol-table td.over { text-align: right; color: var(--red); font-weight: 500; }
+  .ol-table tr.total-row td { border-top: 1px solid var(--border2); font-weight: 500; color: var(--amber); }
+
+  /* Exposure model cards */
+  .exp-band { display: grid; grid-template-columns: 1.8fr 1fr 1fr 1fr 1fr; gap: 10px; margin-bottom: 14px; }
+  .exp-card { border-radius: var(--r-lg); padding: 14px 16px; border: 0.5px solid transparent; }
+  .exp-card.total { background: var(--teal-bg); border-color: var(--teal-b); }
+  .exp-card.exfil { background: var(--blue-bg); border-color: var(--blue-b); }
+  .exp-card.ccpa { background: var(--green-bg); border-color: var(--green-b); }
+  .exp-card.ddos { background: var(--amber-bg); border-color: var(--amber-b); }
+  .exp-card.iot { background: var(--red-bg); border-color: var(--red-b); }
+  .exp-label { font-size: 9px; text-transform: uppercase; letter-spacing: 0.6px; margin-bottom: 6px; }
+  .exp-label.total { color: var(--teal); } .exp-label.exfil { color: var(--blue); }
+  .exp-label.ccpa { color: var(--green); } .exp-label.ddos { color: var(--amber); } .exp-label.iot { color: var(--red); }
+  .exp-val { font-family: 'Fraunces', serif; font-size: 19px; font-weight: 300; line-height: 1.1; }
+  .exp-val.total { color: var(--teal); } .exp-val.exfil { color: var(--blue); }
+  .exp-val.ccpa { color: var(--green); } .exp-val.ddos { color: var(--amber); } .exp-val.iot { color: var(--red); }
+  .exp-sub { font-size: 9px; color: var(--hint); margin-top: 4px; }
+
+  /* Org KPIs */
+  .org-kpi-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px; }
+  .org-kpi { border-radius: var(--r-md); padding: 14px 16px; border: 0.5px solid transparent; }
+  .org-kpi.ransomware { background: var(--red-bg); border-color: var(--red-b); }
+  .org-kpi.pci { background: var(--amber-bg); border-color: var(--amber-b); }
+  .okl { font-size: 9px; text-transform: uppercase; letter-spacing: 0.7px; margin-bottom: 5px; }
+  .okl.ransomware { color: var(--red); } .okl.pci { color: var(--amber); }
+  .okv { font-family: 'Fraunces', serif; font-size: 26px; font-weight: 300; line-height: 1; }
+  .okv.ransomware { color: var(--red); } .okv.pci { color: var(--amber); }
+  .org-main-kpis { display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; margin-bottom: 14px; }
+  .omk { background: var(--bg3); border: 0.5px solid var(--border); border-radius: var(--r-md); padding: 12px 14px; text-align: center; }
+  .omk-label { font-size: 9px; color: var(--hint); text-transform: uppercase; letter-spacing: 0.7px; margin-bottom: 6px; }
+  .omk-val { font-family: 'Fraunces', serif; font-size: 30px; font-weight: 300; color: var(--text); }
+
+  /* CCPA */
+  .ccpa-kpi-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px; }
+  .ccpa-kpi { border-radius: var(--r-md); padding: 14px 16px; border: 0.5px solid transparent; }
+  .ccpa-kpi.exp { background: var(--green-bg); border-color: var(--green-b); }
+  .ccpa-kpi.sys { background: var(--blue-bg); border-color: var(--blue-b); }
+  .ccpa-table { width: 100%; border-collapse: collapse; font-size: 11px; }
+  .ccpa-table th { font-size: 9px; text-transform: uppercase; letter-spacing: 0.6px; color: var(--hint); padding: 0 8px 8px 0; font-weight: 400; text-align: left; }
+  .ccpa-table td { padding: 5px 8px 5px 0; border-top: 0.5px solid var(--border); color: var(--text); }
+  .ccpa-table td.r { text-align: right; font-variant-numeric: tabular-nums; }
+  .ccpa-table tr.total-row td { border-top: 1px solid var(--border2); font-weight: 500; color: var(--green); }
+
+  /* Donut legend */
+  .donut-legend { display: flex; flex-direction: column; gap: 5px; margin-top: 10px; }
+  .dl-item { display: flex; align-items: center; gap: 7px; font-size: 10px; color: var(--muted); }
+  .dl-sq { width: 9px; height: 9px; border-radius: 2px; flex-shrink: 0; }
+
+  /* BIA */
+  .bia-table { width: 100%; border-collapse: collapse; font-size: 11px; }
+  .bia-table th { font-size: 9px; text-transform: uppercase; letter-spacing: 0.7px; color: var(--hint); padding: 0 8px 8px 0; font-weight: 400; text-align: left; }
+  .bia-table td { padding: 7px 8px 7px 0; border-top: 0.5px solid var(--border); color: var(--text); vertical-align: middle; }
+  .rto-pill { display: inline-block; font-size: 9px; padding: 2px 8px; border-radius: 20px; font-weight: 500; }
+  .rto-pill.red { background: var(--red-bg); color: var(--red); }
+  .rto-pill.amber { background: var(--amber-bg); color: var(--amber); }
+  .rto-pill.green { background: var(--green-bg); color: var(--green); }
+
+  .scenario-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px; }
+  .sc { border-radius: var(--r-md); padding: 12px 14px; border: 0.5px solid transparent; }
+  .sc.red { background: var(--red-bg); border-color: var(--red-b); }
+  .sc.amber { background: var(--amber-bg); border-color: var(--amber-b); }
+  .sc.green { background: var(--green-bg); border-color: var(--green-b); }
+  .sc.blue { background: var(--blue-bg); border-color: var(--blue-b); }
+  .sc-label { font-size: 9px; text-transform: uppercase; letter-spacing: 0.7px; margin-bottom: 5px; }
+  .sc-label.red { color: var(--red); } .sc-label.amber { color: var(--amber); }
+  .sc-label.green { color: var(--green); } .sc-label.blue { color: var(--blue); }
+  .sc-val { font-family: 'Fraunces', serif; font-size: 22px; font-weight: 300; line-height: 1; margin: 4px 0; }
+  .sc-val.red { color: var(--red); } .sc-val.amber { color: var(--amber); }
+  .sc-val.green { color: var(--green); } .sc-val.blue { color: var(--blue); }
+  .sc-desc { font-size: 10px; opacity: 0.8; }
+  .sc-desc.red { color: var(--red); } .sc-desc.amber { color: var(--amber); }
+  .sc-desc.green { color: var(--green); } .sc-desc.blue { color: var(--blue); }
+
+  .alert-box { background: rgba(240,96,95,0.08); border: 0.5px solid rgba(240,96,95,0.2); border-radius: var(--r-md); padding: 10px 14px; font-size: 10px; color: var(--muted); }
+  .alert-box strong { color: var(--red); }
+
+  /* Regulatory */
+  .reg-item { display: flex; align-items: flex-start; gap: 12px; padding: 10px 0; border-bottom: 0.5px solid var(--border); }
+  .reg-item:last-child { border-bottom: none; }
+  .reg-dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; margin-top: 4px; }
+  .reg-content { flex: 1; }
+  .reg-name { font-size: 12px; color: var(--text); font-weight: 500; }
+  .reg-desc { font-size: 10px; color: var(--muted); margin-top: 3px; }
+  .reg-due { font-size: 10px; color: var(--hint); margin-top: 3px; }
+  .reg-pct { font-size: 13px; font-weight: 500; flex-shrink: 0; margin-top: 2px; }
+
+  .timeline { position: relative; padding-left: 18px; }
+  .timeline::before { content: ''; position: absolute; left: 6px; top: 6px; bottom: 6px; width: 1px; background: var(--border); }
+  .tl-item { position: relative; margin-bottom: 12px; }
+  .tl-item:last-child { margin-bottom: 0; }
+  .tl-dot { position: absolute; left: -16px; top: 5px; width: 7px; height: 7px; border-radius: 50%; }
+  .tl-dot.red { background: var(--red); box-shadow: 0 0 6px rgba(240,96,95,0.4); }
+  .tl-dot.amber { background: var(--amber); box-shadow: 0 0 6px rgba(212,144,74,0.4); }
+  .tl-dot.green { background: var(--green); } .tl-dot.blue { background: var(--blue); }
+  .tl-date { font-size: 10px; color: var(--hint); } .tl-text { font-size: 11px; color: var(--text); margin-top: 1px; }
+
+  /* TPRM */
+  .tprm-row { display: flex; align-items: center; gap: 10px; padding: 6px 0; border-bottom: 0.5px solid var(--border); font-size: 11px; }
+  .tprm-row:last-child { border-bottom: none; }
+  .tprm-name { flex: 1; color: var(--text); } .tprm-tier { width: 30px; font-size: 10px; color: var(--hint); }
+  .tprm-status { width: 74px; } .tprm-score { width: 28px; text-align: right; font-size: 11px; font-weight: 500; }
+
+  .ctrl-row { display: flex; align-items: center; gap: 10px; padding: 5px 0; border-bottom: 0.5px solid var(--border); }
+  .ctrl-row:last-child { border-bottom: none; }
+  .ctrl-name { width: 160px; font-size: 11px; color: var(--muted); }
+  .ctrl-track { flex: 1; height: 5px; background: var(--bg3); border-radius: 3px; overflow: hidden; }
+  .ctrl-fill { height: 100%; border-radius: 3px; transition: width 1.2s ease; }
+  .ctrl-pct { width: 34px; text-align: right; font-size: 11px; font-weight: 500; }
+
+  .footer { border-top: 0.5px solid var(--border); padding: 20px 40px; display: flex; justify-content: space-between; align-items: center; font-size: 10px; color: var(--hint); max-width: 1400px; margin: 0 auto; }
+
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+  .anim { animation: fadeUp 0.5s ease both; }
+  .anim:nth-child(1){animation-delay:.05s} .anim:nth-child(2){animation-delay:.10s}
+  .anim:nth-child(3){animation-delay:.15s} .anim:nth-child(4){animation-delay:.20s}
+  .anim:nth-child(5){animation-delay:.25s} .anim:nth-child(6){animation-delay:.30s}
+
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: #f5f6f8; }
+  ::-webkit-scrollbar-thumb { background: #d0d3db; border-radius: 3px; }
+
+  /* NIST TABS */
+  .nist-tabs { display: flex; gap: 4px; margin-bottom: 0; flex-wrap: wrap; }
+  .nist-tab {
+    font-family: 'DM Mono', monospace; font-size: 10px; text-transform: uppercase;
+    letter-spacing: 0.8px; padding: 7px 14px; border-radius: var(--r-md) var(--r-md) 0 0;
+    border: 0.5px solid var(--border); border-bottom: none;
+    background: var(--bg3); color: var(--hint); cursor: pointer;
+    transition: background .15s, color .15s;
+  }
+  .nist-tab:hover { background: var(--card); color: var(--muted); }
+  .nist-tab.active { background: var(--card); color: var(--text); border-color: var(--border2); font-weight: 500; }
+  .nist-panel { display: none; border: 0.5px solid var(--border2); border-radius: 0 var(--r-lg) var(--r-lg) var(--r-lg); padding: 16px; background: var(--card); margin-bottom: 12px; }
+  .nist-panel.active { display: block; }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div>
+    <span class="logo">risk<em>Q</em></span>
+    <span class="logo-sub">/ ValuRisQ</span>
+  </div>
+  <nav class="nav">
+    <a href="#assumptions">Assumptions</a>
+    <a href="#insurance">Insurance</a>
+    <a href="#systemexp">System Exposure</a>
+    <a href="#orgexp">Org Exposure</a>
+    <a href="#ccpa">CCPA</a>
+    <a href="#bia">Ransomware BIA</a>
+    <a href="#regulatory">Regulatory</a>
+    <a href="#tprm">TPRM</a>
+    <a href="#privacy">Privacy</a>
+  </nav>
+  <div class="header-right">
+    <div class="header-meta"><div>Data: <strong>Mar 31, 2022</strong></div><div>Org: <strong>Demo</strong></div></div>
+    <span class="conf-badge">Board Confidential</span>
+  </div>
+</header>
+
+<main class="main">
+
+  <div class="page-title">
+    <div>
+      <h1>RiskQ <em>CISO-Level</em> Report</h1>
+      <p>Enterprise Risk &amp; CISO Office · ValuRisQ Platform - $700M Company Example</p>
+    </div>
+    <div class="period-pill">Classification: Board Confidential &nbsp;·&nbsp; Next Board Review: Q3</div>
+  </div>
+
+  <!-- KPI BAND -->
+  <div class="section-label">Executive summary — key risk indicators</div>
+  <div class="kpi-band">
+    <div class="kpi-card teal anim">
+      <div class="kpi-label">Inherent Risk Exposure</div>
+      <div class="kpi-val">$15.4B</div>
+      <div class="kpi-sub">591 systems tracked</div>
+      <div class="kpi-delta up">Data exfiltration: 82.9%</div>
+    </div>
+    <div class="kpi-card red anim">
+      <div class="kpi-label">Cyber Risk Tolerance</div>
+      <div class="kpi-val">$500M</div>
+      <div class="kpi-sub">Board approved threshold</div>
+      <div class="kpi-delta up">$14.9B above tolerance</div>
+    </div>
+    <div class="kpi-card amber anim">
+      <div class="kpi-label">Ransomware Exposure</div>
+      <div class="kpi-val">$98.5M</div>
+      <div class="kpi-sub">Worst-case scenario</div>
+      <div class="kpi-delta up">Sublimit: $13.2M</div>
+    </div>
+    <div class="kpi-card green anim">
+      <div class="kpi-label">CCPA Exposure</div>
+      <div class="kpi-val">$1.47B</div>
+      <div class="kpi-sub">15 systems · 10.7% of total</div>
+      <div class="kpi-delta up">Crown jewel: 66.8%</div>
+    </div>
+    <div class="kpi-card blue anim">
+      <div class="kpi-label">Org Scale</div>
+      <div class="kpi-val">591</div>
+      <div class="kpi-sub">Systems &nbsp;·&nbsp; 287 vendors</div>
+      <div class="kpi-delta flat">29 business units</div>
+    </div>
+    <div class="kpi-card red anim">
+      <div class="kpi-label">DDoS Exposure</div>
+      <div class="kpi-val">$7.2M</div>
+      <div class="kpi-sub">Business interruption risk</div>
+      <div class="kpi-delta flat">302 systems at risk</div>
+    </div>
+  </div>
+
+  <!-- ── ASSUMPTIONS ── -->
+  <div class="section-label" id="assumptions">Inherent Risk Exposure — Key Assumptions</div>
+  <div class="g2" style="margin-bottom:12px;">
+    <div class="panel">
+      <div class="panel-title">Model methodology <span class="badge blue">Inherent risk · Pre-control</span></div>
+      <div class="stat-row"><div class="stat-label">Risk basis</div><div class="stat-val">Inherent risk — worst-case, pre-control</div></div>
+      <div class="stat-row"><div class="stat-label">Per-record loss value</div><div class="stat-val">~$120 per record (automotive/consumer web)</div></div>
+      <div class="stat-row"><div class="stat-label">Record count basis</div><div class="stat-val">Digital asset inventory · ValuRisQ platform</div></div>
+      <div class="stat-row"><div class="stat-label">Data classification</div><div class="stat-val">Crown Jewel · Business Critical · Business Crucial</div></div>
+      <div class="stat-row"><div class="stat-label">Scenario assumed</div><div class="stat-val">Full exfiltration of all in-scope records</div></div>
+      <div class="stat-row"><div class="stat-label">Source research</div><div class="stat-val">Ponemon Institute · Fortune 1000 · Cyber insurance actuarial data</div></div>
+    </div>
+    <div class="panel">
+      <div class="panel-title">Per-record $120 blended rate — components (automotive profile)</div>
+      <div class="stat-row"><div class="stat-label">Regulatory fines</div><div class="stat-val">CCPA · GDPR · PCI · SEC · State laws</div></div>
+      <div class="stat-row"><div class="stat-label">Notification costs</div><div class="stat-val">Legal, postal, call center, credit monitoring</div></div>
+      <div class="stat-row"><div class="stat-label">Legal liability</div><div class="stat-val">Class action, settlements, defense fees</div></div>
+      <div class="stat-row"><div class="stat-label">Remediation costs</div><div class="stat-val">Forensics, system rebuild, IR team</div></div>
+      <div class="stat-row"><div class="stat-label">Business disruption</div><div class="stat-val">Revenue loss during system unavailability</div></div>
+      <div class="stat-row"><div class="stat-label">Reputational damage</div><div class="stat-val">Customer churn, retention programs (discounted)</div></div>
+    </div>
+  </div>
+  <div class="g3" style="margin-bottom:12px;">
+    <div class="panel">
+      <div class="panel-title">What increases inherent risk exposure</div>
+      <div class="stat-row"><div class="stat-label">Higher record count</div><div class="stat-val" style="color:var(--red)">↑ Exposure</div></div>
+      <div class="stat-row"><div class="stat-label">Crown Jewel classification</div><div class="stat-val" style="color:var(--red)">↑ Per-record rate</div></div>
+      <div class="stat-row"><div class="stat-label">Multi-regulation scope</div><div class="stat-val" style="color:var(--red)">↑ Fine stack</div></div>
+      <div class="stat-row"><div class="stat-label">Third-party data sharing</div><div class="stat-val" style="color:var(--red)">↑ Liability</div></div>
+      <div class="stat-row"><div class="stat-label">IoT / unmanaged devices</div><div class="stat-val" style="color:var(--red)">↑ Attack surface</div></div>
+    </div>
+    <div class="panel">
+      <div class="panel-title">What reduces inherent risk exposure</div>
+      <div class="stat-row"><div class="stat-label">Data minimization</div><div class="stat-val" style="color:var(--green)">↓ Record count</div></div>
+      <div class="stat-row"><div class="stat-label">Information lifecycle mgmt</div><div class="stat-val" style="color:var(--green)">↓ Records over limit</div></div>
+      <div class="stat-row"><div class="stat-label">Data segmentation</div><div class="stat-val" style="color:var(--green)">↓ Per-system ceiling</div></div>
+      <div class="stat-row"><div class="stat-label">Reclassify to lower tier</div><div class="stat-val" style="color:var(--green)">↓ Per-record rate</div></div>
+      <div class="stat-row"><div class="stat-label">Reduce regulatory scope</div><div class="stat-val" style="color:var(--green)">↓ Fine stack</div></div>
+    </div>
+    <div class="panel">
+      <div class="panel-title">Inherent vs. residual risk</div>
+      <div class="stat-row"><div class="stat-label">Inherent risk</div><div class="stat-val">$15.4B — no controls applied</div></div>
+      <div class="stat-row"><div class="stat-label">Residual risk driver</div><div class="stat-val">Control effectiveness scores</div></div>
+      <div class="stat-row"><div class="stat-label">Cloud security posture</div><div class="stat-val" style="color:var(--red)">68% — below threshold</div></div>
+      <div class="stat-row"><div class="stat-label">Vulnerability mgmt</div><div class="stat-val" style="color:var(--red)">61% — below threshold</div></div>
+      <div class="stat-row"><div class="stat-label">Identity &amp; access mgmt</div><div class="stat-val" style="color:var(--green)">91% — on target</div></div>
+    </div>
+  </div>
+  <div class="panel" style="margin-bottom:12px;background:rgba(201,49,47,0.04);border-color:rgba(201,49,47,0.2);">
+    <div class="panel-title">Primary lever to reduce the $15.4B figure <span class="badge red">Board recommendation</span></div>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:4px;">
+      <div>
+        <div style="font-size:9px;text-transform:uppercase;letter-spacing:0.8px;color:var(--hint);margin-bottom:6px;">Step 1</div>
+        <div style="font-size:11px;font-weight:500;color:var(--text);margin-bottom:3px;">Information Lifecycle Review</div>
+        <div style="font-size:10px;color:var(--muted);">Identify records retained beyond business or legal necessity in all 7 over-limit systems</div>
+      </div>
+      <div>
+        <div style="font-size:9px;text-transform:uppercase;letter-spacing:0.8px;color:var(--hint);margin-bottom:6px;">Step 2</div>
+        <div style="font-size:11px;font-weight:500;color:var(--text);margin-bottom:3px;">Data Minimization Program</div>
+        <div style="font-size:10px;color:var(--muted);">Purge records exceeding retention policy — reducing 128M records to ~30M saves ~$11.8B in inherent exposure</div>
+      </div>
+      <div>
+        <div style="font-size:9px;text-transform:uppercase;letter-spacing:0.8px;color:var(--hint);margin-bottom:6px;">Step 3</div>
+        <div style="font-size:11px;font-weight:500;color:var(--text);margin-bottom:3px;">Data Segmentation</div>
+        <div style="font-size:10px;color:var(--muted);">Split high-record systems into isolated stores — lowers per-system ceiling below insurance aggregate</div>
+      </div>
+      <div>
+        <div style="font-size:9px;text-transform:uppercase;letter-spacing:0.8px;color:var(--hint);margin-bottom:6px;">Step 4</div>
+        <div style="font-size:11px;font-weight:500;color:var(--text);margin-bottom:3px;">Insurance Restructuring</div>
+        <div style="font-size:10px;color:var(--muted);">Raise aggregate limit and sublimits to reflect actual exposure profile — addresses transfer gap while steps 1–3 are executed</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── CYBER INSURANCE ── -->
+  <div class="section-label" id="insurance">Current Cyber Insurance Limits</div>
+  <div class="ins-cards">
+    <div class="ins-card">
+      <div class="ins-header">Aggregate Limit</div>
+      <div class="ins-val">$400.0M</div>
+      <div class="ins-sub">Total policy aggregate</div>
+    </div>
+    <div class="ins-card" style="border-color:var(--green-b);">
+      <div class="ins-header" style="color:var(--green)">GDPR Sublimit</div>
+      <div class="ins-val" style="color:var(--green)">$35M</div>
+      <div class="ins-sub">GDPR sublimit (4% of $700M rev)</div>
+    </div>
+    <div class="ins-card" style="border-color:var(--amber-b);">
+      <div class="ins-header" style="color:var(--amber)">Ransomware Sublimit</div>
+      <div class="ins-val" style="color:var(--amber)">$13.2M</div>
+      <div class="ins-sub">Ransomware sublimit</div>
+    </div>
+    <div class="ins-card" style="border-color:var(--red-b);">
+      <div class="ins-header" style="color:var(--red)">Privacy Sublimit</div>
+      <div class="ins-val" style="color:var(--red)">$345M</div>
+      <div class="ins-sub">Sublimit &nbsp;·&nbsp; <span style="color:var(--teal)">18 systems</span></div>
+    </div>
+    <div class="ins-card" style="border-color:var(--blue-b);">
+      <div class="ins-header" style="color:var(--blue)">DDoS Interruption</div>
+      <div class="ins-val" style="color:var(--blue)">$7.2M</div>
+      <div class="ins-sub">Sublimit &nbsp;·&nbsp; <span style="color:var(--teal)">302 systems</span></div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-title">Financial risk exceeding insurance limit — systems over aggregate <span class="badge red">$5.0B highest system risk</span></div>
+    <table class="ol-table">
+      <thead>
+        <tr>
+          <th>System Name</th>
+          <th style="text-align:right">Data Loss Exposure</th>
+          <th style="text-align:right">Records Processed</th>
+          <th style="text-align:right">Records Over Limit</th>
+          <th style="text-align:right">Exposure Over Limit</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr style="background:rgba(201,49,47,0.06);font-weight:500;"><td><strong>Cars.com Consumer Platform (AWS)</strong> <span style="font-size:9px;background:rgba(201,49,47,0.15);color:var(--red);padding:1px 6px;border-radius:10px;margin-left:6px;font-weight:700;">HIGHEST RISK</span></td><td class="r">$5,040,000,000</td><td class="r">42,000,000</td><td class="r">38,666,667</td><td class="over">$4,640,000,000</td></tr>
+        <tr><td>User Data Warehouse – Azure</td><td class="r">$3,360,000,000</td><td class="r">28,000,000</td><td class="r">24,666,667</td><td class="over">$2,960,000,000</td></tr>
+        <tr><td>Dealer Management Portal</td><td class="r">$2,160,000,000</td><td class="r">18,000,000</td><td class="r">14,666,667</td><td class="over">$1,760,000,000</td></tr>
+        <tr><td>Lead Generation &amp; CRM System</td><td class="r">$1,800,000,000</td><td class="r">15,000,000</td><td class="r">11,666,667</td><td class="over">$1,400,000,000</td></tr>
+        <tr><td>Cars.com Mobile App Backend</td><td class="r">$1,440,000,000</td><td class="r">12,000,000</td><td class="r">8,666,667</td><td class="over">$1,040,000,000</td></tr>
+        <tr><td>Ad Targeting &amp; Analytics Platform</td><td class="r">$1,080,000,000</td><td class="r">9,000,000</td><td class="r">5,666,667</td><td class="over">$680,000,000</td></tr>
+        <tr><td>Payments &amp; Billing System</td><td class="r">$504,000,000</td><td class="r">4,200,000</td><td class="r">866,667</td><td class="over">$104,000,000</td></tr>
+        <tr class="total-row"><td><strong>Total</strong></td><td class="r">$15,384,000,000</td><td class="r">128,200,000</td><td class="r">104,866,668</td><td class="over">$12,584,000,000</td></tr>
+      </tbody>
+    </table>
+    <div style="margin-top:12px;" class="alert-box">
+      <strong>⚠ Critical coverage gap:</strong> The highest single system risk is <strong>$5.0B</strong> (Cars.com Consumer Platform), which alone exceeds the $400M aggregate policy limit by <strong>$4.6B</strong>. Total over-limit exposure across all 7 systems is <strong>$12.6B</strong>. Insurance program restructuring and board action required.
+    </div>
+  </div>
+
+
+
+  <div class="g2">
+    <div class="panel">
+      <div class="panel-title">Exposure by model</div>
+      <div style="position:relative;width:100%;height:200px;"><canvas id="expModelChart" role="img" aria-label="Donut: Data Exfiltration 82.9%, CCPA 9.7%, DoS 7.4%, IoT 0.6%">Data Exfiltration 82.9%, CCPA 9.7%, DoS 7.4%, IoT 0.6%</canvas></div>
+      <div class="donut-legend">
+        <div class="dl-item"><div class="dl-sq" style="background:#2470b8"></div>Data Exfiltration — 82.9% ($15.4B)</div>
+        <div class="dl-item"><div class="dl-sq" style="background:#2e8f5a"></div>CCPA Exposure — 10.7% ($1.47B)</div>
+        <div class="dl-item"><div class="dl-sq" style="background:#b86e1a"></div>Business Interruption DoS — 0.05% ($7.2M)</div>
+        <div class="dl-item"><div class="dl-sq" style="background:#c9312f"></div>IoT Exposure — 14.5% ($2B)</div>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="panel-title">Exposure by asset classification</div>
+      <div style="position:relative;width:100%;height:200px;"><canvas id="assetClassChart" role="img" aria-label="Donut: Crown Jewel 56.5%, Business Critical 23.2%, Business Crucial 20.3%">Crown Jewel 56.5%, Business Critical 23.2%, Business Crucial 20.3%</canvas></div>
+      <div class="donut-legend">
+        <div class="dl-item"><div class="dl-sq" style="background:#1a8f89"></div>Crown Jewel — 56.5%</div>
+        <div class="dl-item"><div class="dl-sq" style="background:#2e8f5a"></div>Business Critical — 23.2%</div>
+        <div class="dl-item"><div class="dl-sq" style="background:#b86e1a"></div>Business Crucial — 20.3%</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── ORG EXPOSURE ── -->
+  <div class="section-label" id="orgexp">Organization Exposure — 29 Business Units · 591 Systems · 287 Vendors</div>
+  <div class="g32">
+    <div class="panel">
+      <div class="panel-title">Org KPIs &amp; business interruption DoS by business unit</div>
+      <div class="org-kpi-row">
+        <div class="org-kpi ransomware">
+          <div class="okl ransomware">Ransomware Exposure</div>
+          <div class="okv ransomware">$98.5M</div>
+        </div>
+        <div class="org-kpi pci">
+          <div class="okl pci">PCI Loss</div>
+          <div class="okv pci">$500K</div>
+        </div>
+      </div>
+      <div class="org-main-kpis">
+        <div class="omk"><div class="omk-label">Business Units</div><div class="omk-val">29</div></div>
+        <div class="omk"><div class="omk-label">Systems</div><div class="omk-val">591</div></div>
+        <div class="omk"><div class="omk-label">Vendors</div><div class="omk-val">287</div></div>
+      </div>
+      <div style="font-size:9px;color:var(--hint);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;">Business interruption DoS by business unit ($M)</div>
+      <div style="position:relative;width:100%;height:150px;"><canvas id="dosChart" role="img" aria-label="Bar chart DoS interruption by BU">DoS by BU bar chart</canvas></div>
+    </div>
+    <div class="panel">
+      <div class="panel-title">Participation of org exposure</div>
+      <div style="position:relative;width:100%;height:200px;"><canvas id="orgExpChart" role="img" aria-label="Donut: Ransomware 99.5%, PCI Loss 0.5%">Ransomware 99.5%, PCI Loss 0.5%</canvas></div>
+      <div class="donut-legend">
+        <div class="dl-item"><div class="dl-sq" style="background:#1a8f89"></div>Ransomware — 99.5% ($98.5M)</div>
+        <div class="dl-item"><div class="dl-sq" style="background:#2e8f5a"></div>PCI Loss — 3.7% ($500K)</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── CCPA ── -->
+  <div class="section-label" id="ccpa">CCPA Exposure — $1.47B Across 15 Systems</div>
+  <div class="g32">
+    <div class="panel">
+      <div class="panel-title">CCPA KPIs &amp; asset classification breakdown</div>
+      <div class="ccpa-kpi-row">
+        <div class="ccpa-kpi exp">
+          <div style="font-size:9px;color:var(--green);text-transform:uppercase;letter-spacing:0.7px;margin-bottom:5px;">CCPA Exposure</div>
+          <div style="font-family:'Fraunces',serif;font-size:24px;font-weight:300;color:var(--green);">$1.47B</div>
+        </div>
+        <div class="ccpa-kpi sys">
+          <div style="font-size:9px;color:var(--blue);text-transform:uppercase;letter-spacing:0.7px;margin-bottom:5px;">Systems in Scope</div>
+          <div style="font-family:'Fraunces',serif;font-size:36px;font-weight:300;color:var(--blue);">15</div>
+        </div>
+      </div>
+      <div style="position:relative;width:100%;height:180px;"><canvas id="ccpaClassChart" role="img" aria-label="CCPA by asset class: Crown Jewel 66.8%, Business Critical 25.5%, Business Crucial 1.8%">Crown Jewel 66.8%, Business Critical 25.5%, Business Crucial 1.8%</canvas></div>
+      <div class="donut-legend">
+        <div class="dl-item"><div class="dl-sq" style="background:#1a8f89"></div>Crown Jewel — 66.8%</div>
+        <div class="dl-item"><div class="dl-sq" style="background:#2e8f5a"></div>Business Critical — 25.5%</div>
+        <div class="dl-item"><div class="dl-sq" style="background:#b86e1a"></div>Business Crucial — 1.8%</div>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="panel-title">CCPA exposure by system <span class="badge green">Total $1,469,050,000</span></div>
+      <table class="ccpa-table">
+        <thead><tr><th>System Name</th><th style="text-align:right">CCPA Exposure</th></tr></thead>
+        <tbody>
+          <tr class="total-row"><td>All Systems Total</td><td class="r">$1,469,050,000</td></tr>
+          <tr><td>Guidewire Auto</td><td class="r">$500,000,000</td></tr>
+          <tr><td>Acuity</td><td class="r">$5,000,000</td></tr>
+          <tr><td>Agency Database</td><td class="r">$5,000,000</td></tr>
+          <tr><td>AssureSign</td><td class="r">$5,000,000</td></tr>
+          <tr><td>Delta Dental</td><td class="r">$5,000,000</td></tr>
+          <tr><td>Guidewire ClaimCenter</td><td class="r">$5,000,000</td></tr>
+          <tr><td>COBRA</td><td class="r">$1,400,000</td></tr>
+          <tr><td style="color:var(--hint)">+ 7 additional systems</td><td class="r" style="color:var(--hint)">$942,650,000</td></tr>
+        </tbody>
+      </table>
+      <div style="margin-top:12px;font-size:9px;color:var(--hint);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;">CCPA exposure by business unit ($M)</div>
+      <div style="position:relative;width:100%;height:130px;"><canvas id="ccpaBuChart" role="img" aria-label="CCPA by business unit bar chart">CCPA by BU</canvas></div>
+    </div>
+  </div>
+
+  <!-- ── RANSOMWARE BIA ── -->
+  <div class="section-label" id="bia">Ransomware Business Impact Analysis — Cars.com Profile</div>
+  <div class="g2">
+    <div class="panel">
+      <div class="panel-title">Critical process recovery tiers <span class="badge red">BIA · $1.9M daily revenue</span></div>
+      <table class="bia-table">
+        <thead><tr><th>Process</th><th>RTO</th><th>RPO</th><th>$/day impact</th></tr></thead>
+        <tbody>
+          <tr><td>Cars.com Consumer Platform (AWS)</td><td><span class="rto-pill red">4 hr</span></td><td><span class="rto-pill red">1 hr</span></td><td style="font-weight:500">$1.9M</td></tr>
+          <tr><td>Dealer Management Portal</td><td><span class="rto-pill red">4 hr</span></td><td><span class="rto-pill amber">2 hr</span></td><td style="font-weight:500">$760K</td></tr>
+          <tr><td>Lead Generation &amp; CRM System</td><td><span class="rto-pill amber">8 hr</span></td><td><span class="rto-pill amber">4 hr</span></td><td style="font-weight:500">$380K</td></tr>
+          <tr><td>Ad Targeting &amp; Analytics Platform</td><td><span class="rto-pill amber">12 hr</span></td><td><span class="rto-pill amber">8 hr</span></td><td style="font-weight:500">$190K</td></tr>
+          <tr><td>Payments &amp; Billing System</td><td><span class="rto-pill amber">24 hr</span></td><td><span class="rto-pill green">4 hr</span></td><td style="font-weight:500">$95K</td></tr>
+          <tr><td>Mobile App Backend</td><td><span class="rto-pill green">48 hr</span></td><td><span class="rto-pill green">24 hr</span></td><td style="font-weight:500">$76K</td></tr>
+          <tr><td>HR &amp; Payroll</td><td><span class="rto-pill green">72 hr</span></td><td><span class="rto-pill green">24 hr</span></td><td style="font-weight:500">$38K</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="panel">
+      <div class="panel-title">Exposure scenarios — based on $1.9M/day &amp; 21-day MTTR</div>
+
+      <!-- Revenue basis card -->
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-bottom:10px;">
+        <div style="background:var(--bg3);border:0.5px solid var(--border2);border-radius:var(--r-md);padding:8px 10px;text-align:center;">
+          <div style="font-size:9px;color:var(--hint);text-transform:uppercase;letter-spacing:0.7px;margin-bottom:4px;">Daily Revenue</div>
+          <div style="font-family:'Fraunces',serif;font-size:20px;font-weight:300;color:var(--text);">$1.9M</div>
+        </div>
+        <div style="background:var(--bg3);border:0.5px solid var(--border2);border-radius:var(--r-md);padding:8px 10px;text-align:center;">
+          <div style="font-size:9px;color:var(--hint);text-transform:uppercase;letter-spacing:0.7px;margin-bottom:4px;">Expected MTTR</div>
+          <div style="font-family:'Fraunces',serif;font-size:20px;font-weight:300;color:var(--amber);">21 days</div>
+        </div>
+        <div style="background:var(--bg3);border:0.5px solid var(--border2);border-radius:var(--r-md);padding:8px 10px;text-align:center;">
+          <div style="font-size:9px;color:var(--hint);text-transform:uppercase;letter-spacing:0.7px;margin-bottom:4px;">Annual Revenue</div>
+          <div style="font-family:'Fraunces',serif;font-size:20px;font-weight:300;color:var(--text);">$700M</div>
+        </div>
+      </div>
+
+      <div class="scenario-grid">
+        <div class="sc red">
+          <div class="sc-label red">Worst case</div>
+          <div class="sc-val red">$98.5M</div>
+          <div class="sc-desc red">45 days × $1.9M + $8M ransom + $5M recovery</div>
+        </div>
+        <div class="sc amber">
+          <div class="sc-label amber">Expected</div>
+          <div class="sc-val amber">$29.9M</div>
+          <div class="sc-desc amber">21 days × 60% impact + $3.5M ransom + $2.5M recovery</div>
+        </div>
+        <div class="sc green">
+          <div class="sc-label green">Best case</div>
+          <div class="sc-val green">$6.2M</div>
+          <div class="sc-desc green">3 days × $1.9M + $0.5M containment</div>
+        </div>
+        <div class="sc blue">
+          <div class="sc-label blue">Ransomware sublimit</div>
+          <div class="sc-val blue">$13.2M</div>
+          <div class="sc-desc blue">Current policy sublimit</div>
+        </div>
+      </div>
+      <div class="alert-box"><strong>⚠ Sublimit gap:</strong> Expected scenario ($29.9M) exceeds sublimit ($13.2M) by <strong>$16.7M</strong>. Worst case ($98.5M) leaves <strong>$85.3M uninsured</strong>. Worst-case exposure $98.5M is 7.5× the $13.2M sublimit.</div>
+    </div>
+  </div>
+
+  <!-- ── REGULATORY ── -->
+  <div class="section-label" id="regulatory">Regulatory Exposures</div>
+  <div class="g2">
+    <div class="panel">
+      <div class="panel-title">Active findings &amp; obligations <span class="badge red">4 open</span></div>
+      <div class="reg-item">
+        <div class="reg-dot" style="background:var(--red)"></div>
+        <div class="reg-content">
+          <div class="reg-name">CCPA — California Consumer Privacy Act</div>
+          <div class="reg-desc">$1.47B exposure across 15 systems. CCPA sublimit covers only a fraction of total exposure. Crown jewel systems 66.8% of risk.</div>
+          <div class="reg-due">Ongoing · Owner: DPO · Fine: Up to $7,500 per intentional violation</div>
+        </div>
+        <div class="reg-pct" style="color:var(--amber)">75%</div>
+      </div>
+      <div class="reg-item">
+        <div class="reg-dot" style="background:var(--red)"></div>
+        <div class="reg-content">
+          <div class="reg-name">DORA — ICT risk management gap</div>
+          <div class="reg-desc">Third-party ICT oversight framework incomplete. Article 28 obligations unmet for 4 vendors.</div>
+          <div class="reg-due">Due: 30 Jun 2026 · Owner: CISO / CRO · Fine exposure: €5M–€10M</div>
+        </div>
+        <div class="reg-pct" style="color:var(--amber)">42%</div>
+      </div>
+      <div class="reg-item">
+        <div class="reg-dot" style="background:var(--amber)"></div>
+        <div class="reg-content">
+          <div class="reg-name">SEC Cyber Rule — disclosure latency</div>
+          <div class="reg-desc">Incident response SLA for material cyber disclosure requires tooling and workflow update.</div>
+          <div class="reg-due">Due: 31 Aug 2026 · Owner: GC / CFO · Risk: SEC enforcement action</div>
+        </div>
+        <div class="reg-pct" style="color:var(--amber)">61%</div>
+      </div>
+      <div class="reg-item">
+        <div class="reg-dot" style="background:var(--amber)"></div>
+        <div class="reg-content">
+          <div class="reg-name">PCI DSS 4.0 — Req 6.4.3 compliance</div>
+          <div class="reg-desc">PCI Loss exposure: $500K. Client-side script authorization controls not fully deployed.</div>
+          <div class="reg-due">Due: 31 Mar 2027 · Owner: CTO · Fine exposure: $5K–$100K/month</div>
+        </div>
+        <div class="reg-pct" style="color:var(--green)">78%</div>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="panel-title">Compliance calendar — next 90 days</div>
+      <div class="timeline">
+        <div class="tl-item"><div class="tl-dot amber"></div><div class="tl-date">01 May 2026</div><div class="tl-text">GDPR annual DPA register review — DPO sign-off required</div></div>
+        <div class="tl-item"><div class="tl-dot red"></div><div class="tl-date">15 May 2026</div><div class="tl-text">DORA: ICT third-party register submission to regulator</div></div>
+        <div class="tl-item"><div class="tl-dot red"></div><div class="tl-date">30 Jun 2026</div><div class="tl-text">Cyber insurance renewal — ransomware sublimit gap ($20.8M) review with broker</div></div>
+        <div class="tl-item"><div class="tl-dot amber"></div><div class="tl-date">14 Jul 2026</div><div class="tl-text">Board risk committee — risk report, insurance program restructuring</div></div>
+        <div class="tl-item"><div class="tl-dot green"></div><div class="tl-date">31 Jul 2026</div><div class="tl-text">SOC 2 Type II audit window opens — evidence collection begins</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── TPRM ── -->
+  <div class="section-label" id="tprm">Third-Party Risk Management — 287 Vendors</div>
+  <div class="g32">
+    <div class="panel">
+      <div class="panel-title">Critical &amp; high-tier vendor risk register <span class="badge amber">7 critical</span></div>
+      <div class="tprm-row" style="opacity:0.45;font-size:10px;">
+        <div class="tprm-name" style="color:var(--hint)">Vendor</div>
+        <div class="tprm-tier" style="color:var(--hint)">Tier</div>
+        <div class="tprm-status" style="color:var(--hint)">Status</div>
+        <div class="tprm-score" style="color:var(--hint)">Score</div>
+      </div>
+      <div class="tprm-row"><div class="tprm-name">CloudCore IaaS</div><div class="tprm-tier">T1</div><div class="tprm-status"><span class="badge red">Past due</span></div><div class="tprm-score" style="color:var(--red)">44</div></div>
+      <div class="tprm-row"><div class="tprm-name">PayBridge (PSP)</div><div class="tprm-tier">T1</div><div class="tprm-status"><span class="badge red">Escalated</span></div><div class="tprm-score" style="color:var(--red)">51</div></div>
+      <div class="tprm-row"><div class="tprm-name">DataVault Analytics</div><div class="tprm-tier">T1</div><div class="tprm-status"><span class="badge amber">In review</span></div><div class="tprm-score" style="color:var(--amber)">62</div></div>
+      <div class="tprm-row"><div class="tprm-name">Nexus HR Platform</div><div class="tprm-tier">T2</div><div class="tprm-status"><span class="badge amber">Remediation</span></div><div class="tprm-score" style="color:var(--amber)">67</div></div>
+      <div class="tprm-row"><div class="tprm-name">SecureEdge (MSSP)</div><div class="tprm-tier">T1</div><div class="tprm-status"><span class="badge green">Compliant</span></div><div class="tprm-score" style="color:var(--green)">88</div></div>
+      <div class="tprm-row"><div class="tprm-name">LegalDocs SaaS</div><div class="tprm-tier">T2</div><div class="tprm-status"><span class="badge green">Compliant</span></div><div class="tprm-score" style="color:var(--green)">81</div></div>
+      <div class="tprm-row"><div class="tprm-name">Colossus CDN</div><div class="tprm-tier">T1</div><div class="tprm-status"><span class="badge blue">New</span></div><div class="tprm-score" style="color:var(--blue)">—</div></div>
+    </div>
+    <div class="panel">
+      <div class="panel-title">Portfolio — 287 vendors</div>
+      <div style="margin-bottom:14px;">
+        <div style="font-size:10px;color:var(--hint);margin-bottom:8px;">Vendor count by risk rating</div>
+        <div style="display:flex;align-items:flex-end;gap:6px;height:68px;">
+          <div style="display:flex;flex-direction:column;align-items:center;gap:4px;flex:1;"><div style="width:100%;height:32px;background:var(--red);border-radius:3px 3px 0 0;"></div><div style="font-size:9px;color:var(--hint)">Crit</div><div style="font-size:11px;font-weight:500;color:var(--red)">2</div></div>
+          <div style="display:flex;flex-direction:column;align-items:center;gap:4px;flex:1;"><div style="width:100%;height:50px;background:var(--amber);border-radius:3px 3px 0 0;"></div><div style="font-size:9px;color:var(--hint)">High</div><div style="font-size:11px;font-weight:500;color:var(--amber)">5</div></div>
+          <div style="display:flex;flex-direction:column;align-items:center;gap:4px;flex:1;"><div style="width:100%;height:40px;background:var(--green);border-radius:3px 3px 0 0;"></div><div style="font-size:9px;color:var(--hint)">Med</div><div style="font-size:11px;font-weight:500;color:var(--green)">12</div></div>
+          <div style="display:flex;flex-direction:column;align-items:center;gap:4px;flex:1;"><div style="width:100%;height:18px;background:var(--blue);border-radius:3px 3px 0 0;"></div><div style="font-size:9px;color:var(--hint)">Low</div><div style="font-size:11px;font-weight:500;color:var(--blue)">268</div></div>
+        </div>
+      </div>
+      <div style="border-top:0.5px solid var(--border);padding-top:8px;">
+        <div class="stat-row"><div class="stat-label">Total vendors</div><div class="stat-val">287</div></div>
+        <div class="stat-row"><div class="stat-label">Assessments overdue</div><div class="stat-val" style="color:var(--red)">4</div></div>
+        <div class="stat-row"><div class="stat-label">Contracts without DPA</div><div class="stat-val" style="color:var(--amber)">7</div></div>
+        <div class="stat-row"><div class="stat-label">4th-party deps mapped</div><div class="stat-val" style="color:var(--green)">38%</div></div>
+        <div class="stat-row"><div class="stat-label">Avg assessment cycle</div><div class="stat-val">23 days</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── PRIVACY ── -->
+  <div class="section-label" id="privacy">Privacy Report</div>
+  <div class="g3">
+    <div class="panel">
+      <div class="panel-title">Data subject rights</div>
+      <div class="stat-row"><div class="stat-label">DSARs received</div><div class="stat-val">41</div></div>
+      <div class="stat-row"><div class="stat-label">Responded on time (30d)</div><div class="stat-val" style="color:var(--green)">94%</div></div>
+      <div class="stat-row"><div class="stat-label">Erasure requests fulfilled</div><div class="stat-val">18 / 19</div></div>
+      <div class="stat-row"><div class="stat-label">In-flight DSARs</div><div class="stat-val" style="color:var(--amber)">14</div></div>
+      <div class="stat-row"><div class="stat-label">Complaints to regulator</div><div class="stat-val" style="color:var(--green)">0</div></div>
+    </div>
+    <div class="panel">
+      <div class="panel-title">Incident &amp; breach log</div>
+      <div class="stat-row"><div class="stat-label">Personal data incidents</div><div class="stat-val" style="color:var(--amber)">3</div></div>
+      <div class="stat-row"><div class="stat-label">Notifiable breaches (Art.33)</div><div class="stat-val" style="color:var(--green)">0</div></div>
+      <div class="stat-row"><div class="stat-label">DPA notifications filed</div><div class="stat-val">0</div></div>
+      <div class="stat-row"><div class="stat-label">Avg detection-to-report</div><div class="stat-val">18 hrs</div></div>
+      <div class="stat-row"><div class="stat-label">Records affected (total)</div><div class="stat-val" style="color:var(--amber)">1,240</div></div>
+    </div>
+    <div class="panel">
+      <div class="panel-title">Programme maturity</div>
+      <div class="stat-row"><div class="stat-label">ROPA completeness</div><div class="stat-val" style="color:var(--green)">91%</div></div>
+      <div class="stat-row"><div class="stat-label">DPIAs completed</div><div class="stat-val">6 / 8</div></div>
+      <div class="stat-row"><div class="stat-label">Consent refresh overdue</div><div class="stat-val" style="color:var(--amber)">2 flows</div></div>
+      <div class="stat-row"><div class="stat-label">Cross-border SCCs current</div><div class="stat-val" style="color:var(--green)">100%</div></div>
+      <div class="stat-row"><div class="stat-label">Staff privacy training</div><div class="stat-val">86%</div></div>
+    </div>
+  </div>
+
+  <!-- ── CONTROLS ── -->
+  <div class="section-label">NIST CSF — Security Controls &amp; Vulnerability Management Data</div>
+
+  <!-- Tab nav -->
+  <div class="nist-tabs">
+    <button class="nist-tab active" onclick="showTab('identify')">Identify</button>
+    <button class="nist-tab" onclick="showTab('protect')">Protect</button>
+    <button class="nist-tab" onclick="showTab('detect')">Detect</button>
+    <button class="nist-tab" onclick="showTab('respond')">Respond</button>
+    <button class="nist-tab" onclick="showTab('recover')">Recover</button>
+    <button class="nist-tab" onclick="showTab('vuln')">Vulnerability Pipeline</button>
+  </div>
+
+  <!-- IDENTIFY -->
+  <div id="tab-identify" class="nist-panel active">
+    <div class="g2">
+      <div class="panel">
+        <div class="panel-title">ID — Asset Management &amp; Risk Assessment <span class="badge amber">Avg 74%</span></div>
+        <div class="ctrl-row"><div class="ctrl-name">Digital asset inventory</div><div class="ctrl-track"><div class="ctrl-fill" style="width:0%;background:var(--amber)" data-pct="78"></div></div><div class="ctrl-pct" style="color:var(--amber)">78%</div></div>
+        <div class="ctrl-row"><div class="ctrl-name">Business environment mapping</div><div class="ctrl-track"><div class="ctrl-fill" style="width:0%;background:var(--amber)" data-pct="75"></div></div><div class="ctrl-pct" style="color:var(--amber)">75%</div></div>
+        <div class="ctrl-row"><div class="ctrl-name">Governance framework</div><div class="ctrl-track"><div class="ctrl-fill" style="width:0%;background:var(--amber)" data-pct="80"></div></div><div class="ctrl-pct" style="color:var(--amber)">80%</div></div>
+        <div class="ctrl-row"><div class="ctrl-name">Risk assessment program</div><div class="ctrl-track"><div class="ctrl-fill" style="width:0%;background:var(--amber)" data-pct="72"></div></div><div class="ctrl-pct" style="color:var(--amber)">72%</div></div>
+        <div class="ctrl-row"><div class="ctrl-name">Third-party risk management</div><div class="ctrl-track"><div class="ctrl-fill" style="width:0%;background:var(--amber)" data-pct="65"></div></div><div class="ctrl-pct" style="color:var(--red)">65%</div></div>
+      </div>
+      <div class="panel">
+        <div class="panel-title">ID — Supply Chain Risk</div>
+        <div class="stat-row"><div class="stat-label">Vendors inventoried</div><div class="stat-val">287</div></div>
+        <div class="stat-row"><div class="stat-label">Critical vendors assessed</div><div class="stat-val" style="color:var(--amber)">71%</div></div>
+        <div class="stat-row"><div class="stat-label">4th-party deps mapped</div><div class="stat-val" style="color:var(--red)">38%</div></div>
+        <div class="stat-row"><div class="stat-label">Contracts with DPA</div><div class="stat-val" style="color:var(--amber)">97%</div></div>
+        <div class="stat-row"><div class="stat-label">Assessments overdue</div><div class="stat-val" style="color:var(--red)">4</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PROTECT -->
+  <div id="tab-protect" class="nist-panel">
+    <div class="g2">
+      <div class="panel">
+        <div class="panel-title">PR — Access Control &amp; Awareness <span class="badge green">Avg 85%</span></div>
+        <div class="ctrl-row"><div class="ctrl-name">Identity &amp; access mgmt</div><div class="ctrl-track"><div class="ctrl-fill" style="width:0%;background:var(--green)" data-pct="91"></div></div><div class="ctrl-pct" style="color:var(--green)">91%</div></div>
+        <div class="ctrl-row"><div class="ctrl-name">Awareness &amp; training</div><div class="ctrl-track"><div class="ctrl-fill" style="width:0%;background:var(--green)" data-pct="86"></div></div><div class="ctrl-pct" style="color:var(--green)">86%</div></div>
+        <div class="ctrl-row"><div class="ctrl-name">Data security (DLP)</div><div class="ctrl-track"><div class="ctrl-fill" style="width:0%;background:var(--amber)" data-pct="72"></div></div><div class="ctrl-pct" style="color:var(--amber)">72%</div></div>
+        <div class="ctrl-row"><div class="ctrl-name">Information protection processes</div><div class="ctrl-track"><div class="ctrl-fill" style="width:0%;background:var(--green)" data-pct="84"></div></div><div class="ctrl-pct" style="color:var(--green)">84%</div></div>
+        <div class="ctrl-row"><div class="ctrl-name">Network segmentation</div><div class="ctrl-track"><div class="ctrl-fill" style="width:0%;background:var(--amber)" data-pct="79"></div></div><div class="ctrl-pct" style="color:var(--amber)">79%</div></div>
+        <div class="ctrl-row"><div class="ctrl-name">Cloud security posture</div><div class="ctrl-track"><div class="ctrl-fill" style="width:0%;background:var(--red)" data-pct="68"></div></div><div class="ctrl-pct" style="color:var(--red)">68%</div></div>
+      </div>
+      <div class="panel">
+        <div class="panel-title">PR — Protective Technology</div>
+        <div class="stat-row"><div class="stat-label">Endpoint protection coverage</div><div class="stat-val" style="color:var(--green)">98%</div></div>
+        <div class="stat-row"><div class="stat-label">MFA enforcement</div><div class="stat-val" style="color:var(--green)">94%</div></div>
+        <div class="stat-row"><div class="stat-label">Privileged access mgmt</div><div class="stat-val" style="color:var(--amber)">76%</div></div>
+        <div class="stat-row"><div class="stat-label">Encryption at rest</div><div class="stat-val" style="color:var(--green)">89%</div></div>
+        <div class="stat-row"><div class="stat-label">Encryption in transit</div><div class="stat-val" style="color:var(--green)">97%</div></div>
+        <div class="stat-row"><div class="stat-label">Patch compliance (critical)</div><div class="stat-val" style="color:var(--red)">61%</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DETECT -->
+  <div id="tab-detect" class="nist-panel">
+    <div class="g2">
+      <div class="panel">
+        <div class="panel-title">DE — Detection Capabilities <span class="badge amber">Avg 76%</span></div>
+        <div class="ctrl-row"><div class="ctrl-name">Endpoint detection &amp; response</div><div class="ctrl-track"><div class="ctrl-fill" style="width:0%;background:var(--green)" data-pct="87"></div></div><div class="ctrl-pct" style="color:var(--green)">87%</div></div>
+        <div class="ctrl-row"><div class="ctrl-name">SIEM / log management</div><div class="ctrl-track"><div class="ctrl-fill" style="width:0%;background:var(--amber)" data-pct="78"></div></div><div class="ctrl-pct" style="color:var(--amber)">78%</div></div>
+        <div class="ctrl-row"><div class="ctrl-name">Anomaly &amp; event detection</div><div class="ctrl-track"><div class="ctrl-fill" style="width:0%;background:var(--amber)" data-pct="74"></div></div><div class="ctrl-pct" style="color:var(--amber)">74%</div></div>
+        <div class="ctrl-row"><div class="ctrl-name">Cloud workload monitoring</div><div class="ctrl-track"><div class="ctrl-fill" style="width:0%;background:var(--red)" data-pct="68"></div></div><div class="ctrl-pct" style="color:var(--red)">68%</div></div>
+        <div class="ctrl-row"><div class="ctrl-name">Network traffic analysis</div><div class="ctrl-track"><div class="ctrl-fill" style="width:0%;background:var(--amber)" data-pct="72"></div></div><div class="ctrl-pct" style="color:var(--amber)">72%</div></div>
+      </div>
+      <div class="panel">
+        <div class="panel-title">DE — Detection Metrics</div>
+        <div class="stat-row"><div class="stat-label">Mean time to detect (MTTD)</div><div class="stat-val" style="color:var(--amber)">4.2 days</div></div>
+        <div class="stat-row"><div class="stat-label">Critical alerts investigated</div><div class="stat-val" style="color:var(--green)">96%</div></div>
+        <div class="stat-row"><div class="stat-label">False positive rate</div><div class="stat-val" style="color:var(--amber)">18%</div></div>
+        <div class="stat-row"><div class="stat-label">Log retention compliance</div><div class="stat-val" style="color:var(--green)">92%</div></div>
+        <div class="stat-row"><div class="stat-label">Threat intel feeds active</div><div class="stat-val">4</div></div>
+        <div class="stat-row"><div class="stat-label">Dark web monitoring</div><div class="stat-val" style="color:var(--green)">Active</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RESPOND -->
+  <div id="tab-respond" class="nist-panel">
+    <div class="g2">
+      <div class="panel">
+        <div class="panel-title">RS — Response Planning <span class="badge amber">Avg 78%</span></div>
+        <div class="ctrl-row"><div class="ctrl-name">Incident response plan</div><div class="ctrl-track"><div class="ctrl-fill" style="width:0%;background:var(--green)" data-pct="85"></div></div><div class="ctrl-pct" style="color:var(--green)">85%</div></div>
+        <div class="ctrl-row"><div class="ctrl-name">IR tabletop exercises</div><div class="ctrl-track"><div class="ctrl-fill" style="width:0%;background:var(--amber)" data-pct="75"></div></div><div class="ctrl-pct" style="color:var(--amber)">75%</div></div>
+        <div class="ctrl-row"><div class="ctrl-name">Communications plan</div><div class="ctrl-track"><div class="ctrl-fill" style="width:0%;background:var(--amber)" data-pct="78"></div></div><div class="ctrl-pct" style="color:var(--amber)">78%</div></div>
+        <div class="ctrl-row"><div class="ctrl-name">Mitigation &amp; containment</div><div class="ctrl-track"><div class="ctrl-fill" style="width:0%;background:var(--amber)" data-pct="80"></div></div><div class="ctrl-pct" style="color:var(--amber)">80%</div></div>
+        <div class="ctrl-row"><div class="ctrl-name">SEC disclosure workflow</div><div class="ctrl-track"><div class="ctrl-fill" style="width:0%;background:var(--red)" data-pct="61"></div></div><div class="ctrl-pct" style="color:var(--red)">61%</div></div>
+      </div>
+      <div class="panel">
+        <div class="panel-title">RS — Response Metrics</div>
+        <div class="stat-row"><div class="stat-label">Mean time to respond (MTTR)</div><div class="stat-val" style="color:var(--amber)">21 days</div></div>
+        <div class="stat-row"><div class="stat-label">IR retainer in place</div><div class="stat-val" style="color:var(--green)">Yes</div></div>
+        <div class="stat-row"><div class="stat-label">Ransomware playbook</div><div class="stat-val" style="color:var(--amber)">Draft</div></div>
+        <div class="stat-row"><div class="stat-label">Legal counsel engaged</div><div class="stat-val" style="color:var(--green)">Yes</div></div>
+        <div class="stat-row"><div class="stat-label">Regulatory notification SLA</div><div class="stat-val" style="color:var(--red)">Not met</div></div>
+        <div class="stat-row"><div class="stat-label">Last IR exercise</div><div class="stat-val" style="color:var(--amber)">8 months ago</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RECOVER -->
+  <div id="tab-recover" class="nist-panel">
+    <div class="g2">
+      <div class="panel">
+        <div class="panel-title">RC — Recovery Planning <span class="badge green">Avg 82%</span></div>
+        <div class="ctrl-row"><div class="ctrl-name">Backup &amp; recovery</div><div class="ctrl-track"><div class="ctrl-fill" style="width:0%;background:var(--green)" data-pct="84"></div></div><div class="ctrl-pct" style="color:var(--green)">84%</div></div>
+        <div class="ctrl-row"><div class="ctrl-name">Disaster recovery plan</div><div class="ctrl-track"><div class="ctrl-fill" style="width:0%;background:var(--green)" data-pct="82"></div></div><div class="ctrl-pct" style="color:var(--green)">82%</div></div>
+        <div class="ctrl-row"><div class="ctrl-name">Business continuity plan</div><div class="ctrl-track"><div class="ctrl-fill" style="width:0%;background:var(--green)" data-pct="80"></div></div><div class="ctrl-pct" style="color:var(--amber)">80%</div></div>
+        <div class="ctrl-row"><div class="ctrl-name">Recovery comms plan</div><div class="ctrl-track"><div class="ctrl-fill" style="width:0%;background:var(--amber)" data-pct="76"></div></div><div class="ctrl-pct" style="color:var(--amber)">76%</div></div>
+        <div class="ctrl-row"><div class="ctrl-name">Lessons learned process</div><div class="ctrl-track"><div class="ctrl-fill" style="width:0%;background:var(--green)" data-pct="85"></div></div><div class="ctrl-pct" style="color:var(--green)">85%</div></div>
+      </div>
+      <div class="panel">
+        <div class="panel-title">RC — Recovery Metrics</div>
+        <div class="stat-row"><div class="stat-label">RTO — consumer platform</div><div class="stat-val" style="color:var(--red)">4 hrs</div></div>
+        <div class="stat-row"><div class="stat-label">RPO — consumer platform</div><div class="stat-val" style="color:var(--red)">1 hr</div></div>
+        <div class="stat-row"><div class="stat-label">Backup tested (last 90d)</div><div class="stat-val" style="color:var(--green)">Yes</div></div>
+        <div class="stat-row"><div class="stat-label">DR test completed (last yr)</div><div class="stat-val" style="color:var(--amber)">Partial</div></div>
+        <div class="stat-row"><div class="stat-label">Immutable backup coverage</div><div class="stat-val" style="color:var(--amber)">74%</div></div>
+        <div class="stat-row"><div class="stat-label">Ransomware recovery tested</div><div class="stat-val" style="color:var(--red)">No</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- VULNERABILITY PIPELINE -->
+  <div id="tab-vuln" class="nist-panel">
+    <div class="g2">
+      <div class="panel">
+        <div class="panel-title">Vulnerability management by domain <span class="badge red">61% effectiveness</span></div>
+        <div id="ctrl-container"></div>
+      </div>
+      <div class="panel">
+        <div class="panel-title">Vulnerability pipeline <span class="badge amber">Patch cadence</span></div>
+        <div class="stat-row"><div class="stat-label">Critical CVEs open (&gt;30d)</div><div class="stat-val" style="color:var(--red)">8</div></div>
+        <div class="stat-row"><div class="stat-label">High CVEs open</div><div class="stat-val" style="color:var(--amber)">34</div></div>
+        <div class="stat-row"><div class="stat-label">Mean time to patch (critical)</div><div class="stat-val" style="color:var(--amber)">11.2 days</div></div>
+        <div class="stat-row"><div class="stat-label">Mean time to patch (high)</div><div class="stat-val">22.4 days</div></div>
+        <div class="stat-row"><div class="stat-label">Pen test findings open</div><div class="stat-val" style="color:var(--amber)">12 (2 critical)</div></div>
+        <div class="stat-row"><div class="stat-label">Attack surface reduction</div><div class="stat-val" style="color:var(--green)">↓ 14%</div></div>
+        <div class="stat-row"><div class="stat-label">Cloud security posture</div><div class="stat-val" style="color:var(--red)">68% — below threshold</div></div>
+        <div class="stat-row"><div class="stat-label">Vulnerability mgmt score</div><div class="stat-val" style="color:var(--red)">61% — below threshold</div></div>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<footer class="footer">
+  <span>RiskQ CISO-Level Report &nbsp;·&nbsp; ValuRisQ Platform — $700M Company Example &nbsp;·&nbsp; Data as of Mar 31, 2022 &nbsp;·&nbsp; Board Confidential</span>
+  <span>Prepared by: Enterprise Risk &amp; CISO Office</span>
+</footer>
+
+<script>
+Chart.defaults.color = '#8a8f9e';
+Chart.defaults.borderColor = 'rgba(0,0,0,0.07)';
+Chart.defaults.font.family = "'DM Mono', monospace";
+Chart.defaults.font.size = 10;
+
+const TEAL='#1a8f89', GREEN='#2e8f5a', AMBER='#b86e1a', RED='#c9312f', BLUE='#2470b8';
+
+// System exposure by model
+new Chart(document.getElementById('expModelChart'), {
+  type: 'doughnut',
+  data: { labels: ['Data Exfiltration', 'CCPA Exposure', 'Biz Interruption DoS', 'IoT Exposure'],
+    datasets: [{ data: [82.9, 9.7, 7.4, 0.6], backgroundColor: [BLUE, GREEN, AMBER, RED], borderWidth: 0, hoverOffset: 6 }] },
+  options: { responsive: true, maintainAspectRatio: false, cutout: '66%', plugins: { legend: { display: false } } }
+});
+
+// Asset classification
+new Chart(document.getElementById('assetClassChart'), {
+  type: 'doughnut',
+  data: { labels: ['Crown Jewel', 'Business Critical', 'Business Crucial'],
+    datasets: [{ data: [56.5, 23.2, 20.3], backgroundColor: [TEAL, GREEN, AMBER], borderWidth: 0, hoverOffset: 6 }] },
+  options: { responsive: true, maintainAspectRatio: false, cutout: '66%', plugins: { legend: { display: false } } }
+});
+
+// Org exposure participation
+new Chart(document.getElementById('orgExpChart'), {
+  type: 'doughnut',
+  data: { labels: ['Ransomware', 'PCI Loss'],
+    datasets: [{ data: [99.5, 0.5], backgroundColor: [TEAL, GREEN], borderWidth: 0, hoverOffset: 6 }] },
+  options: { responsive: true, maintainAspectRatio: false, cutout: '66%', plugins: { legend: { display: false } } }
+});
+
+// CCPA asset class
+new Chart(document.getElementById('ccpaClassChart'), {
+  type: 'doughnut',
+  data: { labels: ['Crown Jewel', 'Business Critical', 'Business Crucial'],
+    datasets: [{ data: [66.8, 25.5, 1.8], backgroundColor: [TEAL, GREEN, AMBER], borderWidth: 0, hoverOffset: 6 }] },
+  options: { responsive: true, maintainAspectRatio: false, cutout: '66%', plugins: { legend: { display: false } } }
+});
+
+// DoS by BU
+new Chart(document.getElementById('dosChart'), {
+  type: 'bar',
+  data: {
+    labels: ['Claims', 'Headquarters', 'Operations', 'Policy Services'],
+    datasets: [
+      { label: 'Policy Services BU', data: [110, 0, 0, 4], backgroundColor: TEAL+'cc' },
+      { label: 'Not mapped', data: [5, 115, 60, 1], backgroundColor: TEAL+'55' }
+    ]
+  },
+  options: { responsive: true, maintainAspectRatio: false,
+    scales: {
+      x: { stacked: true, grid: { display: false }, ticks: { color: '#8a8f9e' } },
+      y: { stacked: true, grid: { color: 'rgba(0,0,0,0.05)' }, ticks: { color: '#8a8f9e', callback: v => '$' + v + 'M' } }
+    },
+    plugins: { legend: { display: false } }
+  }
+});
+
+// CCPA by BU
+new Chart(document.getElementById('ccpaBuChart'), {
+  type: 'bar',
+  data: {
+    labels: ['CO1 Claims', 'CO1 Uninsured', 'MO1 Ops', 'LA1 Financial', 'HQ', 'LA1 Client', 'FL1 Uninsured'],
+    datasets: [{ data: [580, 500, 280, 160, 35, 10, 5], backgroundColor: GREEN, borderRadius: 3, borderSkipped: false }]
+  },
+  options: { responsive: true, maintainAspectRatio: false,
+    scales: {
+      x: { grid: { display: false }, ticks: { color: '#8a8f9e', maxRotation: 40 } },
+      y: { grid: { color: 'rgba(0,0,0,0.05)' }, ticks: { color: '#8a8f9e', callback: v => '$' + v + 'M' } }
+    },
+    plugins: { legend: { display: false } }
+  }
+});
+
+// Controls
+const controls = [
+  { name: 'Identity & access mgmt', pct: 91 },
+  { name: 'Endpoint detection', pct: 87 },
+  { name: 'Backup & recovery', pct: 84 },
+  { name: 'Network segmentation', pct: 79 },
+  { name: 'Data loss prevention', pct: 72 },
+  { name: 'Cloud security posture', pct: 68 },
+  { name: 'Vulnerability mgmt', pct: 61 },
+];
+const cc = document.getElementById('ctrl-container');
+controls.forEach(c => {
+  const col = c.pct >= 85 ? 'var(--green)' : c.pct >= 70 ? 'var(--amber)' : 'var(--red)';
+  const row = document.createElement('div'); row.className = 'ctrl-row';
+  row.innerHTML = `<div class="ctrl-name">${c.name}</div><div class="ctrl-track"><div class="ctrl-fill" style="width:0%;background:${col}" data-pct="${c.pct}"></div></div><div class="ctrl-pct" style="color:${col}">${c.pct}%</div>`;
+  cc.appendChild(row);
+});
+setTimeout(() => document.querySelectorAll('.ctrl-fill').forEach(el => el.style.width = el.dataset.pct + '%'), 300);
+
+// NIST tab switching
+function showTab(id) {
+  document.querySelectorAll('.nist-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nist-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('tab-' + id).classList.add('active');
+  event.target.classList.add('active');
+  // Animate any ctrl-fill bars in the newly shown panel
+  document.querySelectorAll('#tab-' + id + ' .ctrl-fill').forEach(el => {
+    el.style.width = '0%';
+    setTimeout(() => { el.style.width = el.dataset.pct + '%'; }, 50);
+  });
+}
+
+document.querySelectorAll('.nav a').forEach(a => {
+  a.addEventListener('click', e => { e.preventDefault(); const t = document.querySelector(a.getAttribute('href')); if (t) t.scrollIntoView({ behavior: 'smooth', block: 'start' }); });
+});
+</script>
+</body>
+</html>
