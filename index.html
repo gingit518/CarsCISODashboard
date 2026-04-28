@@ -36,7 +36,7 @@
   .header-meta strong { color: var(--muted); }
   .conf-badge { font-size: 9px; text-transform: uppercase; letter-spacing: 1px; padding: 3px 10px; border-radius: 20px; background: var(--amber-bg); color: var(--amber); border: 0.5px solid var(--amber-b); white-space: nowrap; }
 
-  .main { max-width: 1400px; margin: 0 auto; padding: 32px 40px 60px; }
+  .main { max-width: 1400px; margin: 0 auto; padding: 32px 40px 60px; } .footer { max-width: 1400px; margin: 0 auto; }
   .page-title { margin-bottom: 32px; padding-bottom: 24px; border-bottom: 0.5px solid var(--border); display: flex; align-items: flex-end; justify-content: space-between; }
   .page-title h1 { font-family: 'Fraunces', serif; font-size: 42px; font-weight: 300; letter-spacing: -1px; line-height: 1; }
   .page-title h1 em { font-style: italic; color: var(--amber); }
@@ -81,7 +81,7 @@
   .stat-val { font-weight: 500; color: var(--text); }
 
   /* Insurance */
-  .ins-cards { display: grid; grid-template-columns: repeat(5,1fr); gap: 10px; margin-bottom: 14px; }
+  .ins-cards { display: grid; grid-template-columns: repeat(4,1fr); gap: 10px; margin-bottom: 14px; }
   .ins-card { background: var(--bg3); border: 0.5px solid var(--border); border-radius: var(--r-lg); padding: 14px 16px; }
   .ins-header { font-size: 9px; text-transform: uppercase; letter-spacing: 0.8px; color: var(--muted); margin-bottom: 8px; padding-bottom: 6px; border-bottom: 0.5px solid var(--border); }
   .ins-val { font-family: 'Fraunces', serif; font-size: 22px; font-weight: 300; line-height: 1; }
@@ -201,7 +201,7 @@
   .ctrl-fill { height: 100%; border-radius: 3px; transition: width 1.2s ease; }
   .ctrl-pct { width: 34px; text-align: right; font-size: 11px; font-weight: 500; }
 
-  .footer { border-top: 0.5px solid var(--border); padding: 20px 40px; display: flex; justify-content: space-between; align-items: center; font-size: 10px; color: var(--hint); max-width: 1400px; margin: 0 auto; }
+  .footer { border-top: 0.5px solid var(--border); padding: 20px 40px; display: flex; justify-content: space-between; align-items: center; font-size: 10px; color: var(--hint); }
 
   @keyframes fadeUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
   .anim { animation: fadeUp 0.5s ease both; }
@@ -267,7 +267,7 @@
   <div class="kpi-band">
     <div class="kpi-card teal anim">
       <div class="kpi-label">Inherent Risk Exposure</div>
-      <div class="kpi-val">$15.4B</div>
+      <div class="kpi-val">$648M</div>
       <div class="kpi-sub">591 systems tracked</div>
       <div class="kpi-delta up">Data exfiltration: 82.9%</div>
     </div>
@@ -275,7 +275,7 @@
       <div class="kpi-label">Cyber Risk Tolerance</div>
       <div class="kpi-val">$500M</div>
       <div class="kpi-sub">Board approved threshold</div>
-      <div class="kpi-delta up">$14.9B above tolerance</div>
+      <div class="kpi-delta up">$148M above tolerance</div>
     </div>
     <div class="kpi-card amber anim">
       <div class="kpi-label">Ransomware Exposure</div>
@@ -285,15 +285,15 @@
     </div>
     <div class="kpi-card green anim">
       <div class="kpi-label">CCPA Exposure</div>
-      <div class="kpi-val">$1.47B</div>
-      <div class="kpi-sub">15 systems · 10.7% of total</div>
-      <div class="kpi-delta up">Crown jewel: 66.8%</div>
+      <div class="kpi-val">$3.6B</div>
+      <div class="kpi-sub">1.44M CA records × $2,500</div>
+      <div class="kpi-delta up">12% of 12M max records</div>
     </div>
-    <div class="kpi-card blue anim">
-      <div class="kpi-label">Org Scale</div>
-      <div class="kpi-val">591</div>
-      <div class="kpi-sub">Systems &nbsp;·&nbsp; 287 vendors</div>
-      <div class="kpi-delta flat">29 business units</div>
+    <div class="kpi-card amber anim">
+      <div class="kpi-label">Ransomware Exposure</div>
+      <div class="kpi-val">$29.9M</div>
+      <div class="kpi-sub">Expected scenario</div>
+      <div class="kpi-delta up">21d × 60% + $3.5M ransom + $2.5M recovery</div>
     </div>
     <div class="kpi-card red anim">
       <div class="kpi-label">DDoS Exposure</div>
@@ -309,20 +309,20 @@
     <div class="panel">
       <div class="panel-title">Model methodology <span class="badge blue">Inherent risk · Pre-control</span></div>
       <div class="stat-row"><div class="stat-label">Risk basis</div><div class="stat-val">Inherent risk — worst-case, pre-control</div></div>
-      <div class="stat-row"><div class="stat-label">Per-record loss value</div><div class="stat-val">~$120 per record (automotive/consumer web)</div></div>
+      <div class="stat-row"><div class="stat-label">Per-record loss value</div><div class="stat-val">~$54 per record (automotive/consumer web)</div></div>
       <div class="stat-row"><div class="stat-label">Record count basis</div><div class="stat-val">Digital asset inventory · ValuRisQ platform</div></div>
       <div class="stat-row"><div class="stat-label">Data classification</div><div class="stat-val">Crown Jewel · Business Critical · Business Crucial</div></div>
       <div class="stat-row"><div class="stat-label">Scenario assumed</div><div class="stat-val">Full exfiltration of all in-scope records</div></div>
       <div class="stat-row"><div class="stat-label">Source research</div><div class="stat-val">Ponemon Institute · Fortune 1000 · Cyber insurance actuarial data</div></div>
     </div>
     <div class="panel">
-      <div class="panel-title">Per-record $120 blended rate — components (automotive profile)</div>
-      <div class="stat-row"><div class="stat-label">Regulatory fines</div><div class="stat-val">CCPA · GDPR · PCI · SEC · State laws</div></div>
-      <div class="stat-row"><div class="stat-label">Notification costs</div><div class="stat-val">Legal, postal, call center, credit monitoring</div></div>
-      <div class="stat-row"><div class="stat-label">Legal liability</div><div class="stat-val">Class action, settlements, defense fees</div></div>
-      <div class="stat-row"><div class="stat-label">Remediation costs</div><div class="stat-val">Forensics, system rebuild, IR team</div></div>
-      <div class="stat-row"><div class="stat-label">Business disruption</div><div class="stat-val">Revenue loss during system unavailability</div></div>
-      <div class="stat-row"><div class="stat-label">Reputational damage</div><div class="stat-val">Customer churn, retention programs (discounted)</div></div>
+      <div class="panel-title">Per-record $54 blended rate — components (automotive profile)</div>
+      <div class="stat-row"><div class="stat-label">Regulatory fines</div><div class="stat-val" style="color:var(--hint)">Not included in this model</div></div>
+      <div class="stat-row"><div class="stat-label">Notification costs</div><div class="stat-val">~$14/record (legal, postal)</div></div>
+      <div class="stat-row"><div class="stat-label">Legal liability</div><div class="stat-val">~$24/record (class action, settlements)</div></div>
+      <div class="stat-row"><div class="stat-label">Remediation costs</div><div class="stat-val">~$12/record (forensics, IR)</div></div>
+      <div class="stat-row"><div class="stat-label">Business disruption</div><div class="stat-val" style="color:var(--hint)">Not included in this model</div></div>
+      <div class="stat-row"><div class="stat-label">Reputational damage</div><div class="stat-val">~$4/record (churn, retention — discounted)</div></div>
     </div>
   </div>
   <div class="g3" style="margin-bottom:12px;">
@@ -344,7 +344,7 @@
     </div>
     <div class="panel">
       <div class="panel-title">Inherent vs. residual risk</div>
-      <div class="stat-row"><div class="stat-label">Inherent risk</div><div class="stat-val">$15.4B — no controls applied</div></div>
+      <div class="stat-row"><div class="stat-label">Inherent risk</div><div class="stat-val">$648M — no controls applied</div></div>
       <div class="stat-row"><div class="stat-label">Residual risk driver</div><div class="stat-val">Control effectiveness scores</div></div>
       <div class="stat-row"><div class="stat-label">Cloud security posture</div><div class="stat-val" style="color:var(--red)">68% — below threshold</div></div>
       <div class="stat-row"><div class="stat-label">Vulnerability mgmt</div><div class="stat-val" style="color:var(--red)">61% — below threshold</div></div>
@@ -352,7 +352,7 @@
     </div>
   </div>
   <div class="panel" style="margin-bottom:12px;background:rgba(201,49,47,0.04);border-color:rgba(201,49,47,0.2);">
-    <div class="panel-title">Primary lever to reduce the $15.4B figure <span class="badge red">Board recommendation</span></div>
+    <div class="panel-title">Primary lever to reduce the $648M figure <span class="badge red">Board recommendation</span></div>
     <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:4px;">
       <div>
         <div style="font-size:9px;text-transform:uppercase;letter-spacing:0.8px;color:var(--hint);margin-bottom:6px;">Step 1</div>
@@ -362,7 +362,7 @@
       <div>
         <div style="font-size:9px;text-transform:uppercase;letter-spacing:0.8px;color:var(--hint);margin-bottom:6px;">Step 2</div>
         <div style="font-size:11px;font-weight:500;color:var(--text);margin-bottom:3px;">Data Minimization Program</div>
-        <div style="font-size:10px;color:var(--muted);">Purge records exceeding retention policy — reducing 128M records to ~30M saves ~$11.8B in inherent exposure</div>
+        <div style="font-size:10px;color:var(--muted);">Purge records exceeding retention policy — reducing 12M records to ~3M saves ~$486M in inherent exposure</div>
       </div>
       <div>
         <div style="font-size:9px;text-transform:uppercase;letter-spacing:0.8px;color:var(--hint);margin-bottom:6px;">Step 3</div>
@@ -385,11 +385,7 @@
       <div class="ins-val">$400.0M</div>
       <div class="ins-sub">Total policy aggregate</div>
     </div>
-    <div class="ins-card" style="border-color:var(--green-b);">
-      <div class="ins-header" style="color:var(--green)">GDPR Sublimit</div>
-      <div class="ins-val" style="color:var(--green)">$35M</div>
-      <div class="ins-sub">GDPR sublimit (4% of $700M rev)</div>
-    </div>
+
     <div class="ins-card" style="border-color:var(--amber-b);">
       <div class="ins-header" style="color:var(--amber)">Ransomware Sublimit</div>
       <div class="ins-val" style="color:var(--amber)">$13.2M</div>
@@ -408,7 +404,7 @@
   </div>
 
   <div class="panel">
-    <div class="panel-title">Financial risk exceeding insurance limit — systems over aggregate <span class="badge red">$5.0B highest system risk</span></div>
+    <div class="panel-title">Financial risk exceeding insurance limit — systems over aggregate <span class="badge red">$648M highest system risk</span></div>
     <table class="ol-table">
       <thead>
         <tr>
@@ -420,18 +416,18 @@
         </tr>
       </thead>
       <tbody>
-        <tr style="background:rgba(201,49,47,0.06);font-weight:500;"><td><strong>Cars.com Consumer Platform (AWS)</strong> <span style="font-size:9px;background:rgba(201,49,47,0.15);color:var(--red);padding:1px 6px;border-radius:10px;margin-left:6px;font-weight:700;">HIGHEST RISK</span></td><td class="r">$5,040,000,000</td><td class="r">42,000,000</td><td class="r">38,666,667</td><td class="over">$4,640,000,000</td></tr>
-        <tr><td>User Data Warehouse – Azure</td><td class="r">$3,360,000,000</td><td class="r">28,000,000</td><td class="r">24,666,667</td><td class="over">$2,960,000,000</td></tr>
-        <tr><td>Dealer Management Portal</td><td class="r">$2,160,000,000</td><td class="r">18,000,000</td><td class="r">14,666,667</td><td class="over">$1,760,000,000</td></tr>
-        <tr><td>Lead Generation &amp; CRM System</td><td class="r">$1,800,000,000</td><td class="r">15,000,000</td><td class="r">11,666,667</td><td class="over">$1,400,000,000</td></tr>
-        <tr><td>Cars.com Mobile App Backend</td><td class="r">$1,440,000,000</td><td class="r">12,000,000</td><td class="r">8,666,667</td><td class="over">$1,040,000,000</td></tr>
-        <tr><td>Ad Targeting &amp; Analytics Platform</td><td class="r">$1,080,000,000</td><td class="r">9,000,000</td><td class="r">5,666,667</td><td class="over">$680,000,000</td></tr>
-        <tr><td>Payments &amp; Billing System</td><td class="r">$504,000,000</td><td class="r">4,200,000</td><td class="r">866,667</td><td class="over">$104,000,000</td></tr>
-        <tr class="total-row"><td><strong>Total</strong></td><td class="r">$15,384,000,000</td><td class="r">128,200,000</td><td class="r">104,866,668</td><td class="over">$12,584,000,000</td></tr>
+        <tr style="background:rgba(201,49,47,0.06);font-weight:500;"><td><strong>Cars.com Consumer Platform (AWS)</strong> <span style="font-size:9px;background:rgba(201,49,47,0.15);color:var(--red);padding:1px 6px;border-radius:10px;margin-left:6px;font-weight:700;">HIGHEST RISK</span></td><td class="r">$648,000,000</td><td class="r">12,000,000</td><td class="r">4,592,593</td><td class="over">$248,000,000</td></tr>
+        <tr><td>User Data Warehouse – Azure</td><td class="r">$432,000,000</td><td class="r">8,000,000</td><td class="r">592,593</td><td class="over">$32,000,000</td></tr>
+        <tr><td>Dealer Management Portal</td><td class="r">$432,000,000</td><td class="r">8,000,000</td><td class="r">592,593</td><td class="over">$32,000,000</td></tr>
+        <tr><td>Lead Generation &amp; CRM System</td><td class="r">$270,000,000</td><td class="r">5,000,000</td><td class="r">—</td><td class="r" style="color:var(--green)">Within limit</td></tr>
+        <tr><td>Cars.com Mobile App Backend</td><td class="r">$108,000,000</td><td class="r">2,000,000</td><td class="r">—</td><td class="r" style="color:var(--green)">Within limit</td></tr>
+        <tr><td>Ad Targeting &amp; Analytics Platform</td><td class="r">$48,600,000</td><td class="r">900,000</td><td class="r">—</td><td class="r" style="color:var(--green)">Within limit</td></tr>
+        <tr><td>Payments &amp; Billing System</td><td class="r">$22,680,000</td><td class="r">420,000</td><td class="r">—</td><td class="r" style="color:var(--green)">Within limit</td></tr>
+        <tr class="total-row"><td><strong>Total</strong></td><td class="r">$1,961,280,000</td><td class="r">36,320,000</td><td class="r">5,777,778</td><td class="over">$312,000,000</td></tr>
       </tbody>
     </table>
     <div style="margin-top:12px;" class="alert-box">
-      <strong>⚠ Critical coverage gap:</strong> The highest single system risk is <strong>$5.0B</strong> (Cars.com Consumer Platform), which alone exceeds the $400M aggregate policy limit by <strong>$4.6B</strong>. Total over-limit exposure across all 7 systems is <strong>$12.6B</strong>. Insurance program restructuring and board action required.
+      <strong>⚠ Critical coverage gap:</strong> The highest single system risk is <strong>$648M</strong> (Cars.com Consumer Platform), which exceeds the $400M aggregate policy limit by <strong>$248M</strong>. Total over-limit exposure across 3 systems is <strong>$312M</strong>. Insurance program restructuring and board action required.
     </div>
   </div>
 
@@ -442,8 +438,8 @@
       <div class="panel-title">Exposure by model</div>
       <div style="position:relative;width:100%;height:200px;"><canvas id="expModelChart" role="img" aria-label="Donut: Data Exfiltration 82.9%, CCPA 9.7%, DoS 7.4%, IoT 0.6%">Data Exfiltration 82.9%, CCPA 9.7%, DoS 7.4%, IoT 0.6%</canvas></div>
       <div class="donut-legend">
-        <div class="dl-item"><div class="dl-sq" style="background:#2470b8"></div>Data Exfiltration — 82.9% ($15.4B)</div>
-        <div class="dl-item"><div class="dl-sq" style="background:#2e8f5a"></div>CCPA Exposure — 10.7% ($1.47B)</div>
+        <div class="dl-item"><div class="dl-sq" style="background:#2470b8"></div>Data Exfiltration — 82.9% ($648M)</div>
+        <div class="dl-item"><div class="dl-sq" style="background:#2e8f5a"></div>CCPA Exposure — $3.6B (1.44M CA records × $2,500)</div>
         <div class="dl-item"><div class="dl-sq" style="background:#b86e1a"></div>Business Interruption DoS — 0.05% ($7.2M)</div>
         <div class="dl-item"><div class="dl-sq" style="background:#c9312f"></div>IoT Exposure — 14.5% ($2B)</div>
       </div>
@@ -493,14 +489,21 @@
   </div>
 
   <!-- ── CCPA ── -->
-  <div class="section-label" id="ccpa">CCPA Exposure — $1.47B Across 15 Systems</div>
+  <div class="section-label" id="ccpa">CCPA Exposure — $3.6B · 1.44M California Records (12% of 12M Max)</div>
+
+  <div class="panel" style="margin-bottom:12px;background:rgba(36,112,184,0.04);border-color:rgba(36,112,184,0.2);">
+    <div class="panel-title">Board context — statutory ceiling vs. expected enforcement <span class="badge blue">CCPA Note</span></div>
+    <p style="font-size:11px;color:var(--muted);line-height:1.7;margin:0;">
+      The maximum statutory CCPA exposure is calculated on the highest record-count system: 12,000,000 records × 12% California residents = <strong style="color:var(--text);">1,440,000 CA records</strong> × $2,500 per record = <strong style="color:var(--text);">$3.6 billion</strong>. Actual enforcement outcomes are substantially lower — real-world CCPA settlements have ranged from <strong style="color:var(--text);">$1M to $9M</strong>. However, the statutory ceiling governs how insurance underwriters price the risk and how courts assess liability, and our current privacy sublimit of $345M covers only <strong style="color:var(--red);">9.6% of that ceiling</strong>. The board should understand both the ceiling and the likely enforcement range when making decisions about privacy investment and insurance coverage.
+    </p>
+  </div>
   <div class="g32">
     <div class="panel">
       <div class="panel-title">CCPA KPIs &amp; asset classification breakdown</div>
       <div class="ccpa-kpi-row">
         <div class="ccpa-kpi exp">
           <div style="font-size:9px;color:var(--green);text-transform:uppercase;letter-spacing:0.7px;margin-bottom:5px;">CCPA Exposure</div>
-          <div style="font-family:'Fraunces',serif;font-size:24px;font-weight:300;color:var(--green);">$1.47B</div>
+          <div style="font-family:'Fraunces',serif;font-size:24px;font-weight:300;color:var(--green);">$3.6B</div>
         </div>
         <div class="ccpa-kpi sys">
           <div style="font-size:9px;color:var(--blue);text-transform:uppercase;letter-spacing:0.7px;margin-bottom:5px;">Systems in Scope</div>
@@ -515,11 +518,11 @@
       </div>
     </div>
     <div class="panel">
-      <div class="panel-title">CCPA exposure by system <span class="badge green">Total $1,469,050,000</span></div>
+      <div class="panel-title">CCPA exposure by system <span class="badge red">$3.6B · 1.44M CA records × $2,500</span></div>
       <table class="ccpa-table">
         <thead><tr><th>System Name</th><th style="text-align:right">CCPA Exposure</th></tr></thead>
         <tbody>
-          <tr class="total-row"><td>All Systems Total</td><td class="r">$1,469,050,000</td></tr>
+          <tr class="total-row"><td>CCPA Maximum Exposure (12M max records × 12% CA × $2,500)</td><td class="r">$3,600,000,000</td></tr>
           <tr><td>Guidewire Auto</td><td class="r">$500,000,000</td></tr>
           <tr><td>Acuity</td><td class="r">$5,000,000</td></tr>
           <tr><td>Agency Database</td><td class="r">$5,000,000</td></tr>
@@ -602,31 +605,13 @@
   <div class="section-label" id="regulatory">Regulatory Exposures</div>
   <div class="g2">
     <div class="panel">
-      <div class="panel-title">Active findings &amp; obligations <span class="badge red">4 open</span></div>
-      <div class="reg-item">
-        <div class="reg-dot" style="background:var(--red)"></div>
-        <div class="reg-content">
-          <div class="reg-name">CCPA — California Consumer Privacy Act</div>
-          <div class="reg-desc">$1.47B exposure across 15 systems. CCPA sublimit covers only a fraction of total exposure. Crown jewel systems 66.8% of risk.</div>
-          <div class="reg-due">Ongoing · Owner: DPO · Fine: Up to $7,500 per intentional violation</div>
-        </div>
-        <div class="reg-pct" style="color:var(--amber)">75%</div>
-      </div>
-      <div class="reg-item">
-        <div class="reg-dot" style="background:var(--red)"></div>
-        <div class="reg-content">
-          <div class="reg-name">DORA — ICT risk management gap</div>
-          <div class="reg-desc">Third-party ICT oversight framework incomplete. Article 28 obligations unmet for 4 vendors.</div>
-          <div class="reg-due">Due: 30 Jun 2026 · Owner: CISO / CRO · Fine exposure: €5M–€10M</div>
-        </div>
-        <div class="reg-pct" style="color:var(--amber)">42%</div>
-      </div>
+      <div class="panel-title">Active findings &amp; obligations <span class="badge amber">2 open</span></div>
       <div class="reg-item">
         <div class="reg-dot" style="background:var(--amber)"></div>
         <div class="reg-content">
-          <div class="reg-name">SEC Cyber Rule — disclosure latency</div>
-          <div class="reg-desc">Incident response SLA for material cyber disclosure requires tooling and workflow update.</div>
-          <div class="reg-due">Due: 31 Aug 2026 · Owner: GC / CFO · Risk: SEC enforcement action</div>
+          <div class="reg-name">SEC Cyber Disclosure Rule — disclosure latency</div>
+          <div class="reg-desc">Incident response workflows do not yet meet the material cyber disclosure SLA required under the SEC cybersecurity rule.</div>
+          <div class="reg-due">Due: 31 Aug 2026 &nbsp;·&nbsp; Owner: GC / CFO &nbsp;·&nbsp; Risk: SEC enforcement action</div>
         </div>
         <div class="reg-pct" style="color:var(--amber)">61%</div>
       </div>
@@ -634,20 +619,28 @@
         <div class="reg-dot" style="background:var(--amber)"></div>
         <div class="reg-content">
           <div class="reg-name">PCI DSS 4.0 — Req 6.4.3 compliance</div>
-          <div class="reg-desc">PCI Loss exposure: $500K. Client-side script authorization controls not fully deployed.</div>
-          <div class="reg-due">Due: 31 Mar 2027 · Owner: CTO · Fine exposure: $5K–$100K/month</div>
+          <div class="reg-desc">$3.6B CCPA exposure across 1.44M CA records. Client-side script authorization controls not fully deployed.</div>
+          <div class="reg-due">Due: 31 Mar 2027 &nbsp;·&nbsp; Owner: CTO &nbsp;·&nbsp; Fine exposure: $5K–$100K/month</div>
         </div>
         <div class="reg-pct" style="color:var(--green)">78%</div>
+      </div>
+      <div class="reg-item">
+        <div class="reg-dot" style="background:var(--green)"></div>
+        <div class="reg-content">
+          <div class="reg-name">CCPA — California Consumer Privacy Act</div>
+          <div class="reg-desc">$3.6B maximum exposure — 1.44M CA records (12% of 12M max) × $2,500/record. Privacy sublimit ($345M) covers 9.6% of ceiling.</div>
+          <div class="reg-due">Ongoing &nbsp;·&nbsp; Owner: DPO &nbsp;·&nbsp; Fine: Up to $2,500/unintentional, $7,500/intentional violation</div>
+        </div>
+        <div class="reg-pct" style="color:var(--amber)">75%</div>
       </div>
     </div>
     <div class="panel">
       <div class="panel-title">Compliance calendar — next 90 days</div>
       <div class="timeline">
-        <div class="tl-item"><div class="tl-dot amber"></div><div class="tl-date">01 May 2026</div><div class="tl-text">GDPR annual DPA register review — DPO sign-off required</div></div>
-        <div class="tl-item"><div class="tl-dot red"></div><div class="tl-date">15 May 2026</div><div class="tl-text">DORA: ICT third-party register submission to regulator</div></div>
-        <div class="tl-item"><div class="tl-dot red"></div><div class="tl-date">30 Jun 2026</div><div class="tl-text">Cyber insurance renewal — ransomware sublimit gap ($20.8M) review with broker</div></div>
+        <div class="tl-item"><div class="tl-dot red"></div><div class="tl-date">30 Jun 2026</div><div class="tl-text">Cyber insurance renewal — ransomware sublimit gap ($16.7M) review with broker</div></div>
         <div class="tl-item"><div class="tl-dot amber"></div><div class="tl-date">14 Jul 2026</div><div class="tl-text">Board risk committee — risk report, insurance program restructuring</div></div>
         <div class="tl-item"><div class="tl-dot green"></div><div class="tl-date">31 Jul 2026</div><div class="tl-text">SOC 2 Type II audit window opens — evidence collection begins</div></div>
+        <div class="tl-item"><div class="tl-dot amber"></div><div class="tl-date">31 Aug 2026</div><div class="tl-text">SEC Cyber Disclosure Rule — incident response SLA deadline</div></div>
       </div>
     </div>
   </div>
@@ -940,8 +933,8 @@ new Chart(document.getElementById('dosChart'), {
 new Chart(document.getElementById('ccpaBuChart'), {
   type: 'bar',
   data: {
-    labels: ['CO1 Claims', 'CO1 Uninsured', 'MO1 Ops', 'LA1 Financial', 'HQ', 'LA1 Client', 'FL1 Uninsured'],
-    datasets: [{ data: [580, 500, 280, 160, 35, 10, 5], backgroundColor: GREEN, borderRadius: 3, borderSkipped: false }]
+    labels: ['Consumer Platform', 'Data Warehouse', 'Dealer Portal', 'Lead Gen CRM', 'Mobile App', 'Ad Targeting', 'Payments'],
+    datasets: [{ data: [648, 432, 432, 270, 108, 49, 23], backgroundColor: GREEN, borderRadius: 3, borderSkipped: false }]
   },
   options: { responsive: true, maintainAspectRatio: false,
     scales: {
@@ -969,7 +962,12 @@ controls.forEach(c => {
   row.innerHTML = `<div class="ctrl-name">${c.name}</div><div class="ctrl-track"><div class="ctrl-fill" style="width:0%;background:${col}" data-pct="${c.pct}"></div></div><div class="ctrl-pct" style="color:${col}">${c.pct}%</div>`;
   cc.appendChild(row);
 });
-setTimeout(() => document.querySelectorAll('.ctrl-fill').forEach(el => el.style.width = el.dataset.pct + '%'), 300);
+// Animate ctrl-fill bars in the initially visible tab and ctrl-container
+setTimeout(() => {
+  document.querySelectorAll('#tab-identify .ctrl-fill, #tab-vuln .ctrl-fill, .ctrl-fill').forEach(el => {
+    if (el.dataset.pct) el.style.width = el.dataset.pct + '%';
+  });
+}, 300);
 
 // NIST tab switching
 function showTab(id) {
