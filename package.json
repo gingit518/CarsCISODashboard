@@ -1,6 +1,7 @@
 {
   "name": "ciso-dashboard",
   "version": "1.0.0",
+  "type": "module",
   "description": "RiskQ CISO-Level Report Dashboard",
   "scripts": {
     "dev": "next dev --turbopack",
